@@ -1,14 +1,13 @@
 // ===============================
-// 🌐 تور مجازی سعدآباد — نسخه پانورامای واقعی ۳۶۰°
-// موتور WebGL + لود خودکار عکس‌های شما از images/pano/
-// ✏️ ویرایش داده‌ها فقط در همین فایل
+// 🌐 تور مجازی سعدآباد — v6
+// فیکس نهایی: متغیرهای موتور 2D | fallback سالم از WebGL | نمایش عکس واقعی روی file://
 // ===============================
+console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold');
+
 (function () {
   'use strict';
 
   // ---------- ✏️ داده‌های پروژه‌ها ----------
-  // عکس‌های ۳۶۰ واقعی: هر فایل را در images/pano/<proje>/<mode>/<room>.jpg بگذارید
-  // تا وقتی عکس نباشد، پانورامای نمونه گرافیکی نمایش داده می‌شود
   const TOURS = {
     aftab: {
       title: 'برج مسکونی آفتاب — واحد نوعی ۱۲۰ متری',
@@ -20,22 +19,22 @@
         ['پیشرفت فعلی', '٪۷۵'],
         ['سند', 'تک‌برگ — قابل انتقال'],
       ],
-      features: ['لابی‌من مجهز', 'پارکینگ مسقف', 'انباری اختصاصی', 'آسانسور دو واحدی',
-                 'روف‌گاردن', 'ژنراتور اضطراری', 'درب ضدسرقت', 'پکیج و رادیاتور', 'پنجره دوجداره UPVC'],
+            features: ['درب ضدسرقت مرغوب', 'کاشی و سرامیک ابعاد بزرگ', 'دستگیره هوشمند دیجیتال',
+                 'سقف‌ها کامل کناف', 'سقف پارکینگ کناف', 'پارکینگ اختصاصی', 'لاین نوری'],
       plan: true,
       start: 'living',
       rooms: {
         living:  { name: 'نشیمن و پذیرایی', area: '۴۲ متر',
-          desc: 'بزرگ‌ترین فضای واحد؛ نورگیر کامل با پنجره دوجداره و دید باز. کف پارکت بلوط و دیوارهای گچ‌وشسته آماده رنگ.',
+          desc: 'بزرگ‌ترین فضای واحد؛ نورگیر کامل با پنجره دوجداره و دید باز.',
           doors: [{ to: 'kitchen', label: 'آشپزخانه' }, { to: 'hall', label: 'راهرو' }, { to: 'balcony', label: 'بالکن' }] },
         kitchen: { name: 'آشپزخانه', area: '۱۴ متر',
-          desc: 'اُپن با کابینت تمام‌قد، هود و صفحه شیشه‌ای و نورپردازی مخفی زیر کابینت.',
+          desc: 'اُپن با کابینت تمام‌قد، هود و صفحه شیشه‌ای.',
           doors: [{ to: 'living', label: 'نشیمن' }] },
         hall:    { name: 'راهرو', area: '۱۰ متر',
-          desc: 'دسترسی به اتاق‌ها و سرویس با کمد دیواری تعبیه‌شده.',
+          desc: 'دسترسی به اتاق‌ها و سرویس با کمد دیواری.',
           doors: [{ to: 'living', label: 'نشیمن' }, { to: 'master', label: 'اتاق مستر' }, { to: 'bed2', label: 'اتاق خواب' }, { to: 'bath', label: 'سرویس' }] },
         balcony: { name: 'بالکن', area: '۱۸ متر',
-          desc: 'سرپوشیده با نمای باز؛ کف سرامیک ضدلغزش و جالباسی سقفی.',
+          desc: 'سرپوشیده با نمای باز؛ کف سرامیک ضدلغزش.',
           doors: [{ to: 'living', label: 'نشیمن' }] },
         bath:    { name: 'سرویس و حمام', area: '۶ متر',
           desc: 'سرامیک تا سقف، شیشه سکوریت و روشنایی ضدبخار.',
@@ -44,7 +43,7 @@
           desc: 'مناسب اتاق کودک یا میهمان با پنجره‌ی نورگیر.',
           doors: [{ to: 'hall', label: 'راهرو' }] },
         master:  { name: 'اتاق خواب مستر', area: '۲۰ متر',
-          desc: 'کمد دیواری سراسری و جای استاندارد تخت دوبل با پنجره‌ی دید باز.',
+          desc: 'کمد دیواری سراسری و پنجره‌ی دید باز.',
           doors: [{ to: 'hall', label: 'راهرو' }] },
       },
     },
@@ -59,8 +58,9 @@
         ['پیشرفت فعلی', '٪۴۵'],
         ['تهویه', 'چیلر مرکزی'],
       ],
-      features: ['لابی‌من', 'سالن کنفرانس مشترک', 'پارکینگ رباتیک', 'سیستم BMS',
-                 'آسانسور سریع', 'فایبر‌اپتیک', 'دیزل ژنراتور', 'دسترسی مترو'],
+      features:        ['درب ضدسرقت مرغوب', 'کاشی و سرامیک ابعاد بزرگ', 'دستگیره هوشمند دیجیتال',
+                 'سقف‌ها کامل کناف', 'سقف پارکینگ کناف', 'پارکینگ اختصاصی', 'لاین نوری'],
+
       plan: false,
       start: 'lobby',
       rooms: {
@@ -68,13 +68,13 @@
           desc: 'میز پذیرش سنگی، دیوار ونچر و روشنایی خطی مخفی.',
           doors: [{ to: 'open', label: 'فضای اداری' }, { to: 'meeting', label: 'اتاق جلسات' }, { to: 'manag', label: 'اتاق مدیریت' }] },
         open:    { name: 'فضای اداری باز', area: '۲۴۰ متر',
-          desc: 'چیدمان باز برای ۱۲ ایستگاه کار با پارتیشن شیشه‌ای و تهویه مرکزی.',
+          desc: 'چیدمان باز برای ۱۲ ایستگاه کار با پارتیشن شیشه‌ای.',
           doors: [{ to: 'lobby', label: 'لابی' }] },
         meeting: { name: 'اتاق جلسات', area: '۳۰ متر',
           desc: 'میز ۱۲ نفره، ویدئوپروژکتور و دیوار آکوستیک.',
           doors: [{ to: 'lobby', label: 'لابی' }] },
         manag:   { name: 'اتاق مدیریت', area: '۴۰ متر',
-          desc: 'دید سراسری به فضای اداری با سرویس اختصاصی.',
+          desc: 'دید سراسری به فضای اداری.',
           doors: [{ to: 'lobby', label: 'لابی' }] },
       },
     },
@@ -89,22 +89,22 @@
         ['محوطه', '۲۴ ساعته امنیت'],
         ['سند', 'تک‌برگ'],
       ],
-      features: ['حیاط اختصاصی', 'آلاچیق و باربیکیو', 'پارکینگ سرپوشیده', 'استخر فصلی مشاع',
+      features: ['حیاط اختصاصی', 'آلاچیق و باربکیو', 'پارکینگ سرپوشیده', 'استخر فصلی مشاع',
                  'نمای سنگ تراورتن', 'شومینه', 'محوطه‌سازی سرسبز', 'درب برقی'],
       plan: false,
       start: 'vliving',
       rooms: {
         vliving: { name: 'نشیمن ویلا', area: '۵۵ متر',
-          desc: 'شومینه سنگی و نمای سراسری به جنگل؛ قلب ویلا با ارتفاع سقف ۳/۲۰ متر.',
+          desc: 'شومینه سنگی و نمای سراسری به جنگل؛ سقف ۳/۲۰ متر.',
           doors: [{ to: 'vkitchen', label: 'آشپزخانه' }, { to: 'vmaster', label: 'طبقه بالا' }, { to: 'terr', label: 'تراس' }] },
         vkitchen:{ name: 'آشپزخانه', area: '۱۸ متر',
-          desc: 'کابینت چوب گردو با صفحه سنگ مرمریت و نور مخفی.',
+          desc: 'کابینت چوب گردو با صفحه سنگ مرمریت.',
           doors: [{ to: 'vliving', label: 'نشیمن' }] },
         terr:    { name: 'تراس جنگلی', area: '۳۰ متر',
-          desc: 'دکینگ چوبی با آلاچیق و چشم‌انداز ابرهای جنگل نور.',
+          desc: 'دکینگ چوبی با آلاچیق و چشم‌انداز جنگل نور.',
           doors: [{ to: 'vliving', label: 'نشیمن' }] },
         vmaster: { name: 'اتاق مستر — طبقه دوم', area: '۲۵ متر',
-          desc: 'پنجره سراسری با چشم‌انداز دره و بالکن اختصاصی.',
+          desc: 'پنجره سراسری با چشم‌انداز دره.',
           doors: [{ to: 'vliving', label: 'طبقه همکف' }] },
       },
     },
@@ -120,294 +120,292 @@
   const planDet  = document.getElementById('planDetail');
   const planGo   = document.getElementById('planEnter');
   const canvas   = document.getElementById('panoCanvas');
+  const flatBox  = document.getElementById('panoFlat');
   const hsBox    = document.getElementById('hotspots');
   const badge    = document.getElementById('panoBadge');
   const fade     = document.getElementById('walkFade');
   const rName    = document.getElementById('roomName');
   const rArea    = document.getElementById('roomArea');
   const rDesc    = document.getElementById('roomDesc');
-  const bSkel    = document.getElementById('skSkel');
+
   const bFin     = document.getElementById('skFin');
+  const stage    = document.getElementById('walkStage');
   if (!modal) return;
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const IS_FILE = location.protocol === 'file:';
 
-  // ---------- وضعیت ----------
-  let currentKey = null;
-  let curRoom = null;
-  let curTab = 'info';
-  let skel = false;
-  let walkInit = false;
-  let selectedRoom = null;
+  // ✅ تعریف صحیح و یک‌باره متغیرهای موتور 2D (باگ v5 همین بود)
+  let mode2D = false;
+  let flatImg = null; // تصویر فعلی موتور 2D
+
+  let currentKey = null, curRoom = null, curTab = 'info', skel = false;
+  let walkInit = false, selectedRoom = null;
 
   // ===============================
-  // 📸 موتور پانوراما (WebGL — بدون کتابخانه)
+  // موتور WebGL (هاست)
   // ===============================
-  const gl = canvas.getContext('webgl', { antialias: true }) || canvas.getContext('experimental-webgl');
+  const gl = canvas ? (canvas.getContext('webgl', { antialias: true }) ||
+                       canvas.getContext('experimental-webgl')) : null;
   let prog = null, uni = {}, tex = null;
-  let yaw = -90, pitch = 0, fov = 75;      // yaw بر حسب درجه
+  let yaw = -90, pitch = 0, fov = 90;
   let yawT = yaw, pitchT = pitch, fovT = fov;
   const MAX_FOV = 100, MIN_FOV = 45;
 
-  const VSH = `
-    attribute vec2 aPos;
-    varying vec2 vUV;
-    void main(){ vUV = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }
-  `;
-  const FSH = `
-    precision mediump float;
-    varying vec2 vUV;
-    uniform sampler2D uTex;
-    uniform vec2 uRes;
-    uniform float uYaw;
-    uniform float uPitch;
-    uniform float uFov;
-    void main(){
-      float lon = radians((vUV.x - 0.5) * uFov * (uRes.x / uRes.y) + uYaw);
-      float lat = radians((0.5 - vUV.y) * uFov + uPitch);
-      // اکوری‌کتنگولار: نگاشت به کره
-      vec3 dir = vec3(
-        sin(lon) * cos(lat),
-        sin(lat),
-        -cos(lon) * cos(lat)
-      );
-      vec2 uv = vec2(
-        0.5 + atan(dir.x, -dir.z) / 6.2831853,
-        0.5 - asin(clamp(dir.y, -1.0, 1.0)) / 3.1415926
-      );
-      gl_FragColor = texture2D(uTex, uv);
-    }
-  `;
+  const VSH =
+    'attribute vec2 aPos;' +
+    'varying vec2 vUV;' +
+    'void main(){ vUV = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }';
+  const FSH =
+    'precision mediump float;' +
+    'varying vec2 vUV;' +
+    'uniform sampler2D uTex;' +
+    'uniform vec2 uRes;' +
+    'uniform float uYaw;' +
+    'uniform float uPitch;' +
+    'uniform float uFov;' +
+    'void main(){' +
+    '  float lon = radians((vUV.x - 0.5) * uFov * (uRes.x / uRes.y) + uYaw);' +
+    '  float lat = radians((0.5 - vUV.y) * uFov + uPitch);' +
+    '  vec3 dir = vec3(sin(lon) * cos(lat), sin(lat), -cos(lon) * cos(lat));' +
+    '  vec2 uv = vec2(fract(0.5 + atan(dir.x, -dir.z) / 6.2831853),' +
+    '                 0.5 - asin(clamp(dir.y, -1.0, 1.0)) / 3.1415926);' +
+    '  gl_FragColor = texture2D(uTex, uv);' +
+    '}';
 
   function shader(type, src) {
     const s = gl.createShader(type);
     gl.shaderSource(s, src);
     gl.compileShader(s);
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-      console.warn('shader:', gl.getShaderInfoLog(s));
+      console.warn('[TOUR] shader:', gl.getShaderInfoLog(s));
       return null;
     }
     return s;
   }
 
   function initGL() {
-    if (!gl) return false;
-    prog = gl.createProgram();
-    gl.attachShader(prog, shader(gl.VERTEX_SHADER, VSH));
-    gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FSH));
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      console.warn('link:', gl.getProgramInfoLog(prog));
+    if (!gl) { console.warn('[TOUR] WebGL پشتیبانی نمی‌شود → 2D'); return false; }
+    try {
+      prog = gl.createProgram();
+      gl.attachShader(prog, shader(gl.VERTEX_SHADER, VSH));
+      gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FSH));
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error('link');
+      gl.useProgram(prog);
+      gl.uniform1i(gl.getUniformLocation(prog, 'uTex'), 0);
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1,-1,  1,-1,  -1,1,  -1,1,  1,-1,  1,1
+      ]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'aPos');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      uni.uRes   = gl.getUniformLocation(prog, 'uRes');
+      uni.uYaw   = gl.getUniformLocation(prog, 'uYaw');
+      uni.uPitch = gl.getUniformLocation(prog, 'uPitch');
+      uni.uFov   = gl.getUniformLocation(prog, 'uFov');
+      tex = gl.createTexture();
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                    new Uint8Array([40, 40, 40, 255]));
+      console.log('[TOUR] WebGL آماده ✅');
+      return true;
+    } catch (e) {
+      console.warn('[TOUR] WebGL در دسترس نیست → 2D');
       prog = null;
       return false;
     }
-    gl.useProgram(prog);
-
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      -1,-1,  1,-1,  -1,1,  -1,1,  1,-1,  1,1
-    ]), gl.STATIC_DRAW);
-    const loc = gl.getAttribLocation(prog, 'aPos');
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-    uni.uTex  = gl.getUniformLocation(prog, 'uTex');
-    uni.uRes  = gl.getUniformLocation(prog, 'uRes');
-    uni.uYaw  = gl.getUniformLocation(prog, 'uYaw');
-    uni.uPitch= gl.getUniformLocation(prog, 'uPitch');
-    uni.uFov  = gl.getUniformLocation(prog, 'uFov');
-
-    tex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-    return true;
   }
 
-  function resizeGL() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = canvas.clientWidth * dpr | 0;
-    const h = canvas.clientHeight * dpr | 0;
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width = w; canvas.height = h;
-      gl.viewport(0, 0, w, h);
+  function prepareImage(img) {
+    const MAXW = 4096;
+    const w = img.naturalWidth || img.width;
+    const h = img.naturalHeight || img.height;
+    if (!w || !h || w <= MAXW) return img;
+    const cv = document.createElement('canvas');
+    cv.width = MAXW;
+    cv.height = Math.max(2, Math.round(h * (MAXW / w)));
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    return cv;
+  }
+
+  // تلاش برای WebGL؛ در صورت محدودیت امنیتی، سوییچ خودکار به 2D
+  function setPano(img) {
+    if (!img) return;
+
+    if (mode2D) {
+      flatImg = img;
+      show2D();
+      return;
+    }
+
+    try {
+      const src = prepareImage(img);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+      console.log('[TOUR] تکسچر WebGL آپلود شد ✅');
+    } catch (err) {
+      console.warn('[TOUR] محدودیت امنیتی مرورگر → سوییچ به حالت ساده 2D با عکس واقعی');
+      use2D();
+      flatImg = img;
+      show2D();
     }
   }
 
-  function renderGL() {
-    if (!prog) return;
-    // حرکت نرم به سمت هدف
-    yaw   += (yawT - yaw) * 0.14;
-    pitch += (pitchT - pitch) * 0.14;
-    fov   += (fovT - fov) * 0.12;
-
-    resizeGL();
-    gl.uniform2f(uni.uRes, canvas.width, canvas.height);
-    gl.uniform1f(uni.uYaw, yaw);
-    gl.uniform1f(uni.uPitch, pitch);
-    gl.uniform1f(uni.uFov, fov);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-    requestAnimationFrame(renderGL);
+  // ===============================
+  // 🖼 موتور 2D (سیستم خودتان) — با background-image
+  // (بدون محدودیت امنیتی file://)
+  // ===============================
+  function use2D() {
+    if (mode2D) return;
+    mode2D = true;
+    canvas.style.display = 'none';
+    flatBox.style.display = 'block';
+    badge.textContent = '🖼 پانورامای واقعی — حالت ساده (روی هاست: کامل ۳۶۰°)';
+    console.log('[TOUR] حالت 2D فعال شد ✅');
   }
 
-  // ---------- پانورامای نمونه (تا عکس‌های واقعی نرسند) ----------
+  function show2D() {
+    if (!flatImg || !flatImg.naturalWidth) return;
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+
+    const sc = Math.max((w * 3.2) / flatImg.naturalWidth, (h * 1.2) / flatImg.naturalHeight);
+    const dw = flatImg.naturalWidth * sc;
+    const dh = flatImg.naturalHeight * sc;
+
+    // افقی: چرخش ۳۶۰ درجه = پیمایش کل تصویر
+    const maxShift = Math.max(1, dw - w);
+    const shift = (((yaw % 360) + 360) % 360) / 360 * maxShift;
+
+    // عمودی
+    const yMax = Math.max(0, dh - h);
+    let y0 = -(dh - h) / 2 - (pitch / 40) * (yMax / 2);
+    y0 = Math.min(0, Math.max(-yMax, y0));
+
+    flatBox.style.backgroundImage = 'url("' + flatImg.src + '")';
+    flatBox.style.backgroundSize = dw + 'px ' + dh + 'px';
+    flatBox.style.backgroundPosition = (-shift) + 'px ' + y0 + 'px';
+  }
+
+  // ===============================
+  // پانورامای نمونه
+  // ===============================
   const SAMPLE_CACHE = {};
   function makeSample(room, mode, key) {
     const id = key + '|' + mode + '|' + room;
     if (SAMPLE_CACHE[id]) return SAMPLE_CACHE[id];
-
     const W = 2048, H = 1024;
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     const c = cv.getContext('2d');
-
-    const palette = {
-      living:  { wall: '#F6EFDF', trim: '#DCCBA4' }, kitchen:{ wall: '#EDF0ED', trim: '#C9CEC9' },
-      hall:    { wall: '#F1EBDC', trim: '#D8CDB4' }, balcony: { wall: '#E8ECDD', trim: '#C2CCA9' },
-      bath:    { wall: '#E7F1F0', trim: '#BFD6D3' }, bed2:    { wall: '#EFEBE0', trim: '#D5CBB6' },
-      master:  { wall: '#F1E7D7', trim: '#DCCBA8' }, lobby:   { wall: '#EFE9DC', trim: '#D6CCB4' },
-      open:    { wall: '#EDF0F3', trim: '#C6CDD6' }, meeting: { wall: '#ECEAE3', trim: '#CCC9BE' },
-      manag:   { wall: '#F0E8DA', trim: '#D8CBAD' }, vliving: { wall: '#F0E8D6', trim: '#D9C8A4' },
-      vkitchen:{ wall: '#EDE8DC', trim: '#CFC5AE' }, terr:    { wall: '#E6E9DC', trim: '#BFC7A9' },
-      vmaster: { wall: '#EFE5D4', trim: '#D8C6A2' },
-    };
-    const pal = palette[room] || { wall: '#F0EAD9', trim: '#D8CCAF' };
     const isSkel = (mode === 'skel');
-
-    // آسمان/نور سقف
     const g = c.createLinearGradient(0, 0, 0, H);
-    if (isSkel) {
-      g.addColorStop(0, '#8E8779'); g.addColorStop(0.5, '#A69E90'); g.addColorStop(1, '#6E675C');
-    } else {
-      g.addColorStop(0, '#FDFBF4'); g.addColorStop(0.42, pal.wall); g.addColorStop(1, '#8C7A5C');
-    }
+    if (isSkel) { g.addColorStop(0, '#8E8779'); g.addColorStop(.5, '#A69E90'); g.addColorStop(1, '#6E675C'); }
+    else { g.addColorStop(0, '#FDFBF4'); g.addColorStop(.42, '#F1E9D6'); g.addColorStop(1, '#8C7A5C'); }
     c.fillStyle = g; c.fillRect(0, 0, W, H);
-
-    // خط افق و کف
     const fy = H * 0.68;
     c.fillStyle = isSkel ? '#7E776B' : '#B08D5E';
     c.fillRect(0, fy, W, H - fy);
-
-    // پارکت / بتن
-    if (isSkel) {
-      c.strokeStyle = 'rgba(0,0,0,.14)';
-      for (let x = 0; x < W; x += 90) { c.beginPath(); c.moveTo(x, fy); c.lineTo(x - 160, H); c.stroke(); }
-    } else {
-      c.strokeStyle = 'rgba(0,0,0,.10)';
-      for (let x = 0; x < W; x += 110) { c.beginPath(); c.moveTo(x, fy); c.lineTo(x - 220, H); c.stroke(); }
-      for (let y = fy; y < H; y += 46) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
-    }
-
-    // ستون‌ها و درگاه‌های ساده (حس فضا)
+    c.strokeStyle = 'rgba(0,0,0,.1)';
+    for (let x = 0; x < W; x += 110) { c.beginPath(); c.moveTo(x, fy); c.lineTo(x - 220, H); c.stroke(); }
     for (let i = 0; i < 6; i++) {
-      const x = (i + 0.5) * (W / 6);
+      const x = (i + .5) * (W / 6);
       c.fillStyle = isSkel ? 'rgba(60,55,48,.35)' : 'rgba(120,100,70,.14)';
-      c.fillRect(x - 26, H * 0.18, 52, fy - H * 0.18);
+      c.fillRect(x - 26, H * .18, 52, fy - H * .18);
     }
-
-    // پنجره نورگیر در یک سمت
-    const winX = W * 0.2;
-    const wg = c.createLinearGradient(0, H * 0.22, 0, fy);
-    if (isSkel) { wg.addColorStop(0, '#B9C2BB'); wg.addColorStop(1, '#98A29B'); }
-    else { wg.addColorStop(0, '#DFF0FA'); wg.addColorStop(1, '#BED9E8'); }
+    const wg = c.createLinearGradient(0, H * .22, 0, fy);
+    wg.addColorStop(0, isSkel ? '#B9C2BB' : '#DFF0FA');
+    wg.addColorStop(1, isSkel ? '#98A29B' : '#BED9E8');
     c.fillStyle = wg;
-    c.fillRect(winX, H * 0.24, W * 0.16, fy - H * 0.24);
+    c.fillRect(W * .2, H * .24, W * .16, fy - H * .24);
     c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 10;
-    c.strokeRect(winX, H * 0.24, W * 0.16, fy - H * 0.24);
-
-    if (isSkel) {
-      // نوار خطر و قالب‌بندی
-      c.fillStyle = 'rgba(232,161,60,.85)';
-      for (let x = 0; x < W; x += 80) c.fillRect(x, fy - 26, 44, 12);
-      c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 4;
-      for (let x = 0; x < W; x += 130) { c.beginPath(); c.moveTo(x, H * 0.18); c.lineTo(x + 60, fy); c.stroke(); }
-    } else {
-      // قرنیز و ابزار نور
-      c.fillStyle = pal.trim;
-      c.fillRect(0, fy - 16, W, 16);
-      c.fillStyle = 'rgba(255,246,214,.8)';
-      for (let i = 0; i < 5; i++) {
-        const x = (i + 0.5) * (W / 5);
-        c.beginPath(); c.ellipse(x, H * 0.14, 44, 15, 0, 0, 6.29); c.fill();
-      }
-    }
-
-    // برچسب «نمونه»
+    c.strokeRect(W * .2, H * .24, W * .16, fy - H * .24);
     c.fillStyle = 'rgba(0,0,0,.4)';
-    c.fillRect(0, H * 0.86, W, 54);
+    c.fillRect(0, H * .86, W, 54);
     c.fillStyle = '#EFE8D6';
-    c.font = 'bold 34px Vazirmatn, Tahoma, sans-serif';
+    c.font = 'bold 34px Tahoma, sans-serif';
     c.textAlign = 'center';
-    c.fillText('تصویر نمونه ۳۶۰° — با عکس واقعی پروژه جایگزین می‌شود', W / 2, H * 0.86 + 38);
-
+    c.fillText('تصویر نمونه ۳۶۰° — با عکس واقعی پروژه جایگزین می‌شود', W / 2, H * .86 + 38);
     const img = new Image();
-    img.src = cv.toDataURL('image/jpeg', 0.82);
+    img.src = cv.toDataURL('image/jpeg', .82);
     SAMPLE_CACHE[id] = img;
     return img;
   }
 
-  // لود عکس واقعی یا نمونه
+  // ---------- لود عکس ----------
   function loadPano(room, mode, key) {
     return new Promise(resolve => {
-      const real = 'images/pano/' + key + '/' + mode + '/' + room + '.jpg';
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => { badge.textContent = '🖼 پانورامای واقعی ۳۶۰°'; resolve(img); };
-      img.onerror = () => {
+      let done = false;
+      const finish = img => { if (!done) { done = true; resolve(img); } };
+      const useSample = msg => {
+        badge.textContent = msg;
         const s = makeSample(room, mode, key);
-        s.onload = () => { badge.textContent = '🖼 تصویر نمونه ۳۶۰°'; resolve(s); };
-        if (s.complete) { badge.textContent = '🖼 تصویر نمونه ۳۶۰°'; resolve(s); }
+        if (s.complete) finish(s); else s.onload = () => finish(s);
       };
-      img.src = real;
+
+      const src = 'images/pano/' + key + '/' + mode + '/' + room + '.jpg';
+      badge.textContent = '⏳ در حال بارگذاری…';
+      const img = new Image();
+      img.onload = () => {
+        console.log('[TOUR] عکس لود شد ✅', src, img.naturalWidth + 'x' + img.naturalHeight);
+        badge.textContent = IS_FILE
+          ? '🖼 پانورامای واقعی — حالت ساده (روی هاست: کامل ۳۶۰°)'
+          : '🖼 پانورامای واقعی ۳۶۰°';
+        finish(img);
+      };
+      img.onerror = () => {
+        console.warn('[TOUR] عکس پیدا نشد ❌', src);
+        useSample('🖼 نمونه — عکس یافت نشد: ' + src);
+      };
+      img.src = src;
     });
   }
 
-  function setTexture(img) {
-    if (!gl || !img) return;
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-    // عکس‌های خیلی بزرگ باید توان دوم باشند؛ برای سادگی NPOT با CLAMP کار می‌کنیم
-  }
-
-  // ---------- نقاط حرکت (Hotspot) ----------
-  // هر نقطه یک زاویه‌ی ثابت (درجه) دارد؛ موقع چرخش، جای روی صفحه محاسبه می‌شود
-  let spots = []; // {to,label,yawDeg}
+  // ---------- نقاط حرکت ----------
+  let spots = [];
   function layoutSpots() {
     hsBox.innerHTML = '';
     spots.forEach(s => {
       const el = document.createElement('button');
       el.className = 'hs';
+      el.type = 'button';
       el.innerHTML = '🚶<span>' + s.label + '</span>';
-      el.addEventListener('click', () => goToRoom(s.to));
+      el.addEventListener('click', ev => {
+        ev.stopPropagation();
+        console.log('[TOUR] حرکت به:', s.to);
+        goToRoom(s.to);
+      });
       hsBox.appendChild(el);
       s.el = el;
     });
     placeSpots();
   }
-
   function placeSpots() {
+    if (!stage || !spots.length) return;
     const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
     spots.forEach(s => {
-      // اختلاف زاویه نسبت به نگاه فعلی
       let d = s.yawDeg - yaw;
-      // نرمال‌سازی به بازه -180..180
       while (d > 180) d -= 360;
       while (d < -180) d += 360;
       const halfFovH = fov * (w / h) / 2;
       const el = s.el;
       if (!el) return;
       if (Math.abs(d) > halfFovH) { el.style.display = 'none'; return; }
-      const rel = d / halfFovH;              // -1..1
-      const x = (0.5 + rel * 0.5) * w;
-      const y = h * 0.62 - pitch * (h / fov) * 1.1;
+      const rel = d / halfFovH;
       el.style.display = 'grid';
-      el.style.left = x + 'px';
-      el.style.top  = y + 'px';
+      el.style.left = (0.5 + rel * 0.5) * w + 'px';
+      el.style.top  = (h * 0.62 - pitch * (h / fov) * 1.1) + 'px';
     });
   }
 
@@ -421,7 +419,7 @@
     preparePlan(data);
     selectTab('info');
     skel = false; walkInit = false;
-    bFin.classList.add('active'); bSkel.classList.remove('active');
+   
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -459,15 +457,47 @@
     );
     if (name === 'walk') {
       if (!walkInit && currentKey) {
-        initGL(); walkInit = true;
-        if (prog) requestAnimationFrame(renderGL);
+        const ok = initGL();
+        if (!ok) use2D();
+        walkInit = true;
+        requestAnimationFrame(renderLoop);
         setupRoom(TOURS[currentKey].start);
       } else {
-        // بازگشت به تب: اندازه‌ها ممکن است تغییر کرده باشند
-        setTimeout(placeSpots, 50);
+        if (mode2D) show2D();
+        setTimeout(placeSpots, 60);
       }
-      fitZoom();
+      fovT = MAX_FOV;
     }
+  }
+
+  // ---------- حلقه رندر ----------
+  function renderLoop() {
+    if (curTab === 'walk') {
+          if (mode2D) {
+        yaw   += (yawT - yaw) * 0.2;
+        pitch += (pitchT - pitch) * 0.2;
+        show2D();
+      } else if (prog) {
+
+        yaw   += (yawT - yaw) * 0.14;
+        pitch += (pitchT - pitch) * 0.14;
+        fov   += (fovT - fov) * 0.12;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const w = canvas.clientWidth * dpr | 0;
+        const h = canvas.clientHeight * dpr | 0;
+        if (w > 0 && h > 0 && (canvas.width !== w || canvas.height !== h)) {
+          canvas.width = w; canvas.height = h;
+        }
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.uniform2f(uni.uRes, canvas.width, canvas.height);
+        gl.uniform1f(uni.uYaw, yaw);
+        gl.uniform1f(uni.uPitch, pitch);
+        gl.uniform1f(uni.uFov, fov);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      }
+      placeSpots();
+    }
+    requestAnimationFrame(renderLoop);
   }
 
   // ---------- مشخصات ----------
@@ -479,7 +509,7 @@
       '<div class="spec-grid">' + rows + '</div>' +
       '<h4 class="tour-sub">امکانات پروژه</h4>' +
       '<div class="feat-chips">' + chips + '</div>' +
-      '<p class="tour-note">💡 این تور شبیه‌سازی گرافیکی از واحد نوعی است تا پیش از تحویل، فضا را تجربه کنید — و جایگزین بازدید حضوری نیست. برای هماهنگی بازدید با ما تماس بگیرید.</p>';
+      '<p class="tour-note">💡 این تور شبیه‌سازی گرافیکی از واحد نوعی است تا پیش از تحویل، فضا را تجربه کنید — و جایگزین بازدید حضوری نیست.</p>';
   }
 
   // ---------- نقشه ----------
@@ -497,14 +527,12 @@
       planNote.style.display = '';
     }
   }
-  const planWrapEl = document.getElementById('planWrap');
-  if (planWrapEl) {
-    planWrapEl.querySelectorAll('.p-g').forEach(g => {
+  if (planWrap) {
+    planWrap.querySelectorAll('.p-g').forEach(g => {
       g.addEventListener('click', () => {
-        const data = TOURS.aftab;
-        const room = data.rooms[g.dataset.room];
+        const room = TOURS.aftab.rooms[g.dataset.room];
         if (!room) return;
-        planWrapEl.querySelectorAll('.p-g').forEach(x => x.classList.remove('active'));
+        planWrap.querySelectorAll('.p-g').forEach(x => x.classList.remove('active'));
         g.classList.add('active');
         selectedRoom = g.dataset.room;
         planHint.style.display = 'none';
@@ -523,11 +551,7 @@
   }
 
   // ---------- گشت‌وگذار ----------
-  const stage = document.getElementById('walkStage');
   function clampP(p) { return Math.max(-40, Math.min(40, p)); }
-  function clampY(v) { return v; } // آزاد ۳۶۰
-
-  function fitZoom() { fovT = MAX_FOV; }
 
   function setupRoom(id) {
     const data = TOURS[currentKey];
@@ -538,14 +562,14 @@
     rArea.textContent = '📏 ' + room.area;
     rDesc.textContent = room.desc;
 
-    // نقاط حرکت: پخش افقی بر اساس تعداد درها
-    spots = room.doors.map((d, i) => {
-      const n = room.doors.length;
-      return { to: d.to, label: d.label, yawDeg: -90 + (i - (n - 1) / 2) * 55 };
-    });
+    const n = room.doors.length;
+    spots = room.doors.map((d, i) => ({
+      to: d.to, label: d.label,
+      yawDeg: -90 + (i - (n - 1) / 2) * 55
+    }));
     layoutSpots();
 
-    loadPano(id, skel ? 'skel' : 'fin', currentKey).then(img => setTexture(img));
+    loadPano(id, skel ? 'skel' : 'fin', currentKey).then(setPano);
   }
 
   function goToRoom(id) {
@@ -562,31 +586,30 @@
   // درگ
   let dragging = false, px = 0, py = 0;
   stage.addEventListener('pointerdown', e => {
+    if (e.target && e.target.closest && e.target.closest('.hs')) return;
     dragging = true; px = e.clientX; py = e.clientY;
-    stage.setPointerCapture(e.pointerId);
+    try { stage.setPointerCapture(e.pointerId); } catch (err) {}
   });
   stage.addEventListener('pointermove', e => {
     if (!dragging) return;
-    yawT   += (e.clientX - px) * 0.18;
-    pitchT  = clampP(pitchT - (e.clientY - py) * 0.18);
+    yawT  += (e.clientX - px) * 0.18;
+    pitchT = clampP(pitchT - (e.clientY - py) * 0.18);
     px = e.clientX; py = e.clientY;
   });
   ['pointerup', 'pointercancel'].forEach(ev =>
     stage.addEventListener(ev, () => { dragging = false; })
   );
 
-  // زوم با اسکرول و پینچ
+  // زوم (WebGL)
   stage.addEventListener('wheel', e => {
     e.preventDefault();
     fovT = Math.max(MIN_FOV, Math.min(MAX_FOV, fovT + Math.sign(e.deltaY) * 6));
   }, { passive: false });
-
   let pinch = null;
   stage.addEventListener('touchstart', e => {
-    if (e.touches.length === 2) {
+    if (e.touches.length === 2)
       pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
                          e.touches[0].clientY - e.touches[1].clientY);
-    }
   }, { passive: true });
   stage.addEventListener('touchmove', e => {
     if (pinch && e.touches.length === 2) {
@@ -598,17 +621,11 @@
   }, { passive: true });
   stage.addEventListener('touchend', () => { pinch = null; }, { passive: true });
 
-  // جای‌گذاری نقاط هنگام چرخش نرم
-  (function loop() {
-    if (prog) placeSpots();
-    requestAnimationFrame(loop);
-  })();
-
   // سوییچ اسکلت / تکمیل‌شده
-  bSkel.addEventListener('click', () => { skel = true;  bSkel.classList.add('active'); bFin.classList.remove('active'); reloadPano(); });
-  bFin.addEventListener('click',  () => { skel = false; bFin.classList.add('active');  bSkel.classList.remove('active'); reloadPano(); });
-  function reloadPano() {
+  // دکمه نمای تکمیل‌شده واحد
+  if (bFin) bFin.addEventListener('click', reloadPano);  
+ function reloadPano() {
     if (!curRoom) return;
-    loadPano(curRoom, skel ? 'skel' : 'fin', currentKey).then(img => setTexture(img));
+    loadPano(curRoom, skel ? 'skel' : 'fin', currentKey).then(setPano);
   }
 })();
