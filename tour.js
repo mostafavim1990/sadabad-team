@@ -1,111 +1,131 @@
 // ===============================
-// 🌐 تور مجازی سعدآباد — v6
-// فیکس نهایی: متغیرهای موتور 2D | fallback سالم از WebGL | نمایش عکس واقعی روی file://
+// 🌐 تور مجازی سعدآباد — v7
+// پروژه‌های واقعی: سعدآباد ۱/۲/۳ (بهشهر)
 // ===============================
-console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold');
+console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bold');
 
 (function () {
   'use strict';
 
   // ---------- ✏️ داده‌های پروژه‌ها ----------
   const TOURS = {
-    aftab: {
-      title: 'برج مسکونی آفتاب — واحد نوعی ۱۲۰ متری',
+    sadabad1: {
+      title: 'سعدآباد ۱ — واحد دوخواب ۸۷ متری',
       specs: [
-        ['تعداد طبقات', '۱۵ طبقه'],
-        ['واحد در هر طبقه', '۴ واحد'],
-        ['متراژ واحدها', '۱۱۵ تا ۱۸۰ متر'],
-        ['زمان تحویل', 'بهار ۱۴۰۵'],
-        ['پیشرفت فعلی', '٪۷۵'],
-        ['سند', 'تک‌برگ — قابل انتقال'],
+        ['متراژ کل ساختمان', '۷۳۶ متر'],
+        ['تعداد طبقات', '۴ طبقه'],
+        ['تعداد واحدها', '۶ واحد'],
+        ['ترکیب واحدها', 'طبقات ۱ و ۲: دو واحد ۸۷ متری دوخواب (شمالی و جنوبی) — طبقات ۳ و ۴: یک واحد ۱۷۹ متری سه‌خواب'],
+        ['محل پروژه', 'بهشهر، زمین‌های چیت‌سازی'],
+        ['زمان تحویل', 'بهار ۱۴۰۷'],
       ],
-            features: ['درب ضدسرقت مرغوب', 'کاشی و سرامیک ابعاد بزرگ', 'دستگیره هوشمند دیجیتال',
-                 'سقف‌ها کامل کناف', 'سقف پارکینگ کناف', 'پارکینگ اختصاصی', 'لاین نوری'],
+      features: ['درب ضدسرقت مرغوب', 'کاشی و سرامیک ابعاد بزرگ', 'دستگیره هوشمند لمسی',
+                 'سقف‌ها کامل کناف', 'سیستم اطفای حریق', 'اعلان حریق هوشمند',
+                 'پارکینگ اختصاصی', 'لاین نوری حتی در پارکینگ', 'نمای تلفیقی مدرن'],
       plan: true,
       start: 'living',
       rooms: {
-        living:  { name: 'نشیمن و پذیرایی', area: '۴۲ متر',
-          desc: 'بزرگ‌ترین فضای واحد؛ نورگیر کامل با پنجره دوجداره و دید باز.',
-          doors: [{ to: 'kitchen', label: 'آشپزخانه' }, { to: 'hall', label: 'راهرو' }, { to: 'balcony', label: 'بالکن' }] },
-        kitchen: { name: 'آشپزخانه', area: '۱۴ متر',
-          desc: 'اُپن با کابینت تمام‌قد، هود و صفحه شیشه‌ای.',
+        living:  { name: 'نشیمن و پذیرایی', area: '۲۸ متر',
+          desc: 'بزرگ‌ترین فضای واحد؛ با دیوار TV و فضای شومینه. کف سرامیک ابعاد بزرگ و سقف کناف با نور مخفی.',
+          doors: [{ to: 'kitchen', label: 'آشپزخانه' }, { to: 'hall', label: 'راهرو' }] },
+        kitchen: { name: 'آشپزخانه', area: '۱۱ متر',
+          desc: 'آشپزخانه‌ی اُپن با کاشی و سرامیک ابعاد بزرگ و نورپردازی مدرن.',
+          doors: [{ to: 'living', label: 'نشیمن' }] },
+        hall:    { name: 'راهرو و ورودی', area: '۸ متر',
+          desc: 'دسترسی به اتاق‌ها، سرویس‌ها و پله‌ی مشترک طبقه.',
+          doors: [{ to: 'living', label: 'نشیمن' }, { to: 'bed1', label: 'اتاق خواب ۱' }, { to: 'bed2', label: 'اتاق خواب ۲' }, { to: 'bath', label: 'حمام' }, { to: 'wc', label: 'سرویس' }] },
+        trass:   { name: 'تراس', area: '۴ متر',
+          desc: 'فضای باز کنار اتاق خواب ۱.',
+          doors: [{ to: 'bed1', label: 'اتاق خواب ۱' }] },
+        bed1:    { name: 'اتاق خواب ۱', area: '۱۲ متر',
+          desc: 'اتاق خواب با دسترسی مستقیم به تراس؛ دستگیره‌ی هوشمند لمسی.',
+          doors: [{ to: 'hall', label: 'راهرو' }, { to: 'trass', label: 'تراس' }] },
+        bed2:    { name: 'اتاق خواب ۲', area: '۱۴ متر',
+          desc: 'اتاق خواب بزرگ‌تر با کمد سراسری و پنجره‌ی دید باز.',
+          doors: [{ to: 'hall', label: 'راهرو' }] },
+        bath:    { name: 'حمام', area: '۴ متر',
+          desc: 'حمام با سرامیک تا سقف و شیشه سکوریت.',
+          doors: [{ to: 'hall', label: 'راهرو' }] },
+        wc:      { name: 'سرویس بهداشتی', area: '۳ متر',
+          desc: 'سرویس بهداشتی جدا از حمام — راحتی روزمره‌ی مهمان‌ها.',
+          doors: [{ to: 'hall', label: 'راهرو' }] },
+      },
+    },
+
+    sadabad2: {
+      title: 'سعدآباد ۲ — واحد سه‌خواب ۱۳۷ متری',
+      specs: [
+        ['تعداد طبقات', '۴ طبقه'],
+        ['واحد در هر طبقه', '۱ واحد'],
+        ['متراژ هر واحد', '۱۳۷ متر'],
+        ['ترکیب واحد', 'سه‌خواب با دو خواب مستر'],
+        ['محل پروژه', 'بهشهر، تقاطع خیابان فرهنگیان و رجایی'],
+        ['زمان تحویل', 'تابستان ۱۴۰۷'],
+      ],
+      features: ['درب ضدسرقت مرغوب', 'کاشی و سرامیک ابعاد بزرگ', 'دستگیره هوشمند لمسی',
+                 'سقف‌ها کامل کناف', 'سیستم اطفای حریق', 'اعلان حریق هوشمند',
+                 'پارکینگ اختصاصی', 'لاین نوری حتی در پارکینگ', 'نمای تلفیقی مدرن'],
+      plan: false,
+      start: 'living',
+      rooms: {
+        living:  { name: 'نشیمن و پذیرایی', area: '۳۵ متر',
+          desc: 'فضای نشیمن بزرگ واحد ۱۳۷ متری با نورگیر سراسری.',
+          doors: [{ to: 'kitchen', label: 'آشپزخانه' }, { to: 'hall', label: 'راهرو' }] },
+        kitchen: { name: 'آشپزخانه', area: '۱۵ متر',
+          desc: 'آشپزخانه با کاشی و سرامیک ابعاد بزرگ.',
           doors: [{ to: 'living', label: 'نشیمن' }] },
         hall:    { name: 'راهرو', area: '۱۰ متر',
-          desc: 'دسترسی به اتاق‌ها و سرویس با کمد دیواری.',
-          doors: [{ to: 'living', label: 'نشیمن' }, { to: 'master', label: 'اتاق مستر' }, { to: 'bed2', label: 'اتاق خواب' }, { to: 'bath', label: 'سرویس' }] },
-        balcony: { name: 'بالکن', area: '۱۸ متر',
-          desc: 'سرپوشیده با نمای باز؛ کف سرامیک ضدلغزش.',
+          desc: 'دسترسی به اتاق‌ها و سرویس.',
+          doors: [{ to: 'living', label: 'نشیمن' }, { to: 'master', label: 'اتاق مستر ۱' }, { to: 'bed2', label: 'اتاق مستر ۲' }, { to: 'bed3', label: 'اتاق خواب' }, { to: 'bath', label: 'سرویس' }] },
+        bath:    { name: 'سرویس و حمام', area: '۸ متر',
+          desc: 'سرامیک تا سقف و شیشه سکوریت.',
+          doors: [{ to: 'hall', label: 'راهرو' }] },
+        master:  { name: 'اتاق مستر ۱', area: '۱۸ متر',
+          desc: 'خواب مستر اصلی با سرویس اختصاصی.',
+          doors: [{ to: 'hall', label: 'راهرو' }] },
+        bed2:    { name: 'اتاق مستر ۲', area: '۱۶ متر',
+          desc: 'خواب مستر دوم.',
+          doors: [{ to: 'hall', label: 'راهرو' }] },
+        bed3:    { name: 'اتاق خواب', area: '۱۴ متر',
+          desc: 'اتاق خواب سوم با نورگیر.',
+          doors: [{ to: 'hall', label: 'راهرو' }] },
+      },
+    },
+
+    sadabad3: {
+      title: 'سعدآباد ۳ — واحد ۹۲ متری (نبش)',
+      specs: [
+        ['تعداد طبقات', '۵ طبقه'],
+        ['واحد در هر طبقه', '۱ واحد'],
+        ['متراژ هر واحد', '۹۲ متر'],
+        ['ویژگی پروژه', 'ساختمان سه‌نبش با نمای در هر سه جهت'],
+        ['محل پروژه', 'بهشهر، خیابان هنر، کوچه بشارتی'],
+        ['زمان تحویل', 'تابستان ۱۴۰۷'],
+      ],
+      features: ['درب ضدسرقت مرغوب', 'کاشی و سرامیک ابعاد بزرگ', 'دستگیره هوشمند لمسی',
+                 'سقف‌ها کامل کناف', 'سیستم اطفای حریق', 'اعلان حریق هوشمند',
+                 'پارکینگ اختصاصی', 'لاین نوری حتی در پارکینگ', 'نمای تلفیقی مدرن'],
+      plan: false,
+      start: 'living',
+      rooms: {
+        living:  { name: 'نشیمن و پذیرایی', area: '۲۶ متر',
+          desc: 'نشیمن واحد نبش با نورگیری از دو جهت به دلیل موقعیت سه‌نبش.',
+          doors: [{ to: 'kitchen', label: 'آشپزخانه' }, { to: 'hall', label: 'راهرو' }] },
+        kitchen: { name: 'آشپزخانه', area: '۱۲ متر',
+          desc: 'آشپزخانه با کاشی و سرامیک ابعاد بزرگ.',
           doors: [{ to: 'living', label: 'نشیمن' }] },
-        bath:    { name: 'سرویس و حمام', area: '۶ متر',
-          desc: 'سرامیک تا سقف، شیشه سکوریت و روشنایی ضدبخار.',
+        hall:    { name: 'راهرو', area: '۹ متر',
+          desc: 'دسترسی به اتاق‌ها و سرویس.',
+          doors: [{ to: 'living', label: 'نشیمن' }, { to: 'master', label: 'اتاق مستر' }, { to: 'bed2', label: 'اتاق خواب' }, { to: 'bath', label: 'سرویس' }] },
+        bath:    { name: 'سرویس و حمام', area: '۷ متر',
+          desc: 'سرامیک تا سقف و شیشه سکوریت.',
           doors: [{ to: 'hall', label: 'راهرو' }] },
-        bed2:    { name: 'اتاق خواب', area: '۱۶ متر',
-          desc: 'مناسب اتاق کودک یا میهمان با پنجره‌ی نورگیر.',
+        master:  { name: 'اتاق مستر', area: '۱۶ متر',
+          desc: 'خواب مستر با دید نبش.',
           doors: [{ to: 'hall', label: 'راهرو' }] },
-        master:  { name: 'اتاق خواب مستر', area: '۲۰ متر',
-          desc: 'کمد دیواری سراسری و پنجره‌ی دید باز.',
+        bed2:    { name: 'اتاق خواب', area: '۱۴ متر',
+          desc: 'اتاق خواب دوم.',
           doors: [{ to: 'hall', label: 'راهرو' }] },
-      },
-    },
-
-    negar: {
-      title: 'مجتمع تجاری-اداری نگار — واحد نوعی اداری',
-      specs: [
-        ['تعداد طبقات', '۹ طبقه'],
-        ['نوع کاربری', 'اداری — تجاری'],
-        ['متراژ واحدها', '۶۰ تا ۲۴۰ متر'],
-        ['زمان تحویل', 'پاییز ۱۴۰۵'],
-        ['پیشرفت فعلی', '٪۴۵'],
-        ['تهویه', 'چیلر مرکزی'],
-      ],
-      features:        ['درب ضدسرقت مرغوب', 'کاشی و سرامیک ابعاد بزرگ', 'دستگیره هوشمند دیجیتال',
-                 'سقف‌ها کامل کناف', 'سقف پارکینگ کناف', 'پارکینگ اختصاصی', 'لاین نوری'],
-
-      plan: false,
-      start: 'lobby',
-      rooms: {
-        lobby:   { name: 'لابی و پذیرش', area: '۶۰ متر',
-          desc: 'میز پذیرش سنگی، دیوار ونچر و روشنایی خطی مخفی.',
-          doors: [{ to: 'open', label: 'فضای اداری' }, { to: 'meeting', label: 'اتاق جلسات' }, { to: 'manag', label: 'اتاق مدیریت' }] },
-        open:    { name: 'فضای اداری باز', area: '۲۴۰ متر',
-          desc: 'چیدمان باز برای ۱۲ ایستگاه کار با پارتیشن شیشه‌ای.',
-          doors: [{ to: 'lobby', label: 'لابی' }] },
-        meeting: { name: 'اتاق جلسات', area: '۳۰ متر',
-          desc: 'میز ۱۲ نفره، ویدئوپروژکتور و دیوار آکوستیک.',
-          doors: [{ to: 'lobby', label: 'لابی' }] },
-        manag:   { name: 'اتاق مدیریت', area: '۴۰ متر',
-          desc: 'دید سراسری به فضای اداری.',
-          doors: [{ to: 'lobby', label: 'لابی' }] },
-      },
-    },
-
-    zeytoon: {
-      title: 'شهرک ویلایی زیتون — ویلای دوبلکس نمونه',
-      specs: [
-        ['تعداد واحدها', '۴۰ ویلای دوبلکس'],
-        ['متراژ هر ویلا', '۲۲۰ متر + حیاط'],
-        ['زمان تحویل', 'تابستان ۱۴۰۶'],
-        ['پیشرفت فعلی', '٪۲۰'],
-        ['محوطه', '۲۴ ساعته امنیت'],
-        ['سند', 'تک‌برگ'],
-      ],
-      features: ['حیاط اختصاصی', 'آلاچیق و باربکیو', 'پارکینگ سرپوشیده', 'استخر فصلی مشاع',
-                 'نمای سنگ تراورتن', 'شومینه', 'محوطه‌سازی سرسبز', 'درب برقی'],
-      plan: false,
-      start: 'vliving',
-      rooms: {
-        vliving: { name: 'نشیمن ویلا', area: '۵۵ متر',
-          desc: 'شومینه سنگی و نمای سراسری به جنگل؛ سقف ۳/۲۰ متر.',
-          doors: [{ to: 'vkitchen', label: 'آشپزخانه' }, { to: 'vmaster', label: 'طبقه بالا' }, { to: 'terr', label: 'تراس' }] },
-        vkitchen:{ name: 'آشپزخانه', area: '۱۸ متر',
-          desc: 'کابینت چوب گردو با صفحه سنگ مرمریت.',
-          doors: [{ to: 'vliving', label: 'نشیمن' }] },
-        terr:    { name: 'تراس جنگلی', area: '۳۰ متر',
-          desc: 'دکینگ چوبی با آلاچیق و چشم‌انداز جنگل نور.',
-          doors: [{ to: 'vliving', label: 'نشیمن' }] },
-        vmaster: { name: 'اتاق مستر — طبقه دوم', area: '۲۵ متر',
-          desc: 'پنجره سراسری با چشم‌انداز دره.',
-          doors: [{ to: 'vliving', label: 'طبقه همکف' }] },
       },
     },
   };
@@ -127,7 +147,6 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
   const rName    = document.getElementById('roomName');
   const rArea    = document.getElementById('roomArea');
   const rDesc    = document.getElementById('roomDesc');
-
   const bFin     = document.getElementById('skFin');
   const stage    = document.getElementById('walkStage');
   if (!modal) return;
@@ -135,10 +154,8 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const IS_FILE = location.protocol === 'file:';
 
-  // ✅ تعریف صحیح و یک‌باره متغیرهای موتور 2D (باگ v5 همین بود)
   let mode2D = false;
-  let flatImg = null; // تصویر فعلی موتور 2D
-
+  let flatImg = null;
   let currentKey = null, curRoom = null, curTab = 'info', skel = false;
   let walkInit = false, selectedRoom = null;
 
@@ -236,16 +253,13 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
     return cv;
   }
 
-  // تلاش برای WebGL؛ در صورت محدودیت امنیتی، سوییچ خودکار به 2D
   function setPano(img) {
     if (!img) return;
-
     if (mode2D) {
       flatImg = img;
       show2D();
       return;
     }
-
     try {
       const src = prepareImage(img);
       gl.activeTexture(gl.TEXTURE0);
@@ -254,7 +268,7 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
       console.log('[TOUR] تکسچر WebGL آپلود شد ✅');
     } catch (err) {
-      console.warn('[TOUR] محدودیت امنیتی مرورگر → سوییچ به حالت ساده 2D با عکس واقعی');
+      console.warn('[TOUR] محدودیت امنیتی → سوییچ به 2D');
       use2D();
       flatImg = img;
       show2D();
@@ -262,8 +276,7 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
   }
 
   // ===============================
-  // 🖼 موتور 2D (سیستم خودتان) — با background-image
-  // (بدون محدودیت امنیتی file://)
+  // 🖼 موتور 2D (سیستم خودتان — file://)
   // ===============================
   function use2D() {
     if (mode2D) return;
@@ -278,20 +291,14 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
     if (!flatImg || !flatImg.naturalWidth) return;
     const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
-
     const sc = Math.max((w * 3.2) / flatImg.naturalWidth, (h * 1.2) / flatImg.naturalHeight);
     const dw = flatImg.naturalWidth * sc;
     const dh = flatImg.naturalHeight * sc;
-
-    // افقی: چرخش ۳۶۰ درجه = پیمایش کل تصویر
     const maxShift = Math.max(1, dw - w);
     const shift = (((yaw % 360) + 360) % 360) / 360 * maxShift;
-
-    // عمودی
     const yMax = Math.max(0, dh - h);
     let y0 = -(dh - h) / 2 - (pitch / 40) * (yMax / 2);
     y0 = Math.min(0, Math.max(-yMax, y0));
-
     flatBox.style.backgroundImage = 'url("' + flatImg.src + '")';
     flatBox.style.backgroundSize = dw + 'px ' + dh + 'px';
     flatBox.style.backgroundPosition = (-shift) + 'px ' + y0 + 'px';
@@ -308,24 +315,21 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     const c = cv.getContext('2d');
-    const isSkel = (mode === 'skel');
     const g = c.createLinearGradient(0, 0, 0, H);
-    if (isSkel) { g.addColorStop(0, '#8E8779'); g.addColorStop(.5, '#A69E90'); g.addColorStop(1, '#6E675C'); }
-    else { g.addColorStop(0, '#FDFBF4'); g.addColorStop(.42, '#F1E9D6'); g.addColorStop(1, '#8C7A5C'); }
+    g.addColorStop(0, '#FDFBF4'); g.addColorStop(.42, '#F1E9D6'); g.addColorStop(1, '#8C7A5C');
     c.fillStyle = g; c.fillRect(0, 0, W, H);
     const fy = H * 0.68;
-    c.fillStyle = isSkel ? '#7E776B' : '#B08D5E';
+    c.fillStyle = '#B08D5E';
     c.fillRect(0, fy, W, H - fy);
     c.strokeStyle = 'rgba(0,0,0,.1)';
     for (let x = 0; x < W; x += 110) { c.beginPath(); c.moveTo(x, fy); c.lineTo(x - 220, H); c.stroke(); }
     for (let i = 0; i < 6; i++) {
       const x = (i + .5) * (W / 6);
-      c.fillStyle = isSkel ? 'rgba(60,55,48,.35)' : 'rgba(120,100,70,.14)';
+      c.fillStyle = 'rgba(120,100,70,.14)';
       c.fillRect(x - 26, H * .18, 52, fy - H * .18);
     }
     const wg = c.createLinearGradient(0, H * .22, 0, fy);
-    wg.addColorStop(0, isSkel ? '#B9C2BB' : '#DFF0FA');
-    wg.addColorStop(1, isSkel ? '#98A29B' : '#BED9E8');
+    wg.addColorStop(0, '#DFF0FA'); wg.addColorStop(1, '#BED9E8');
     c.fillStyle = wg;
     c.fillRect(W * .2, H * .24, W * .16, fy - H * .24);
     c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 10;
@@ -352,12 +356,11 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
         const s = makeSample(room, mode, key);
         if (s.complete) finish(s); else s.onload = () => finish(s);
       };
-
-      const src = 'images/pano/' + key + '/' + mode + '/' + room + '.jpg';
+      const src = 'images/pano/' + key + '/fin/' + room + '.jpg';
       badge.textContent = '⏳ در حال بارگذاری…';
       const img = new Image();
       img.onload = () => {
-        console.log('[TOUR] عکس لود شد ✅', src, img.naturalWidth + 'x' + img.naturalHeight);
+        console.log('[TOUR] عکس لود شد ✅', src);
         badge.textContent = IS_FILE
           ? '🖼 پانورامای واقعی — حالت ساده (روی هاست: کامل ۳۶۰°)'
           : '🖼 پانورامای واقعی ۳۶۰°';
@@ -382,7 +385,6 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
       el.innerHTML = '🚶<span>' + s.label + '</span>';
       el.addEventListener('click', ev => {
         ev.stopPropagation();
-        console.log('[TOUR] حرکت به:', s.to);
         goToRoom(s.to);
       });
       hsBox.appendChild(el);
@@ -419,7 +421,6 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
     preparePlan(data);
     selectTab('info');
     skel = false; walkInit = false;
-   
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -470,36 +471,6 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
     }
   }
 
-  // ---------- حلقه رندر ----------
-  function renderLoop() {
-    if (curTab === 'walk') {
-          if (mode2D) {
-        yaw   += (yawT - yaw) * 0.2;
-        pitch += (pitchT - pitch) * 0.2;
-        show2D();
-      } else if (prog) {
-
-        yaw   += (yawT - yaw) * 0.14;
-        pitch += (pitchT - pitch) * 0.14;
-        fov   += (fovT - fov) * 0.12;
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const w = canvas.clientWidth * dpr | 0;
-        const h = canvas.clientHeight * dpr | 0;
-        if (w > 0 && h > 0 && (canvas.width !== w || canvas.height !== h)) {
-          canvas.width = w; canvas.height = h;
-        }
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.uniform2f(uni.uRes, canvas.width, canvas.height);
-        gl.uniform1f(uni.uYaw, yaw);
-        gl.uniform1f(uni.uPitch, pitch);
-        gl.uniform1f(uni.uFov, fov);
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-      }
-      placeSpots();
-    }
-    requestAnimationFrame(renderLoop);
-  }
-
   // ---------- مشخصات ----------
   function buildInfo(data) {
     const rows = data.specs.map(s =>
@@ -530,7 +501,7 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
   if (planWrap) {
     planWrap.querySelectorAll('.p-g').forEach(g => {
       g.addEventListener('click', () => {
-        const room = TOURS.aftab.rooms[g.dataset.room];
+        const room = TOURS.sadabad1.rooms[g.dataset.room];
         if (!room) return;
         planWrap.querySelectorAll('.p-g').forEach(x => x.classList.remove('active'));
         g.classList.add('active');
@@ -569,7 +540,7 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
     }));
     layoutSpots();
 
-    loadPano(id, skel ? 'skel' : 'fin', currentKey).then(setPano);
+    loadPano(id, 'fin', currentKey).then(setPano);
   }
 
   function goToRoom(id) {
@@ -600,7 +571,6 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
     stage.addEventListener(ev, () => { dragging = false; })
   );
 
-  // زوم (WebGL)
   stage.addEventListener('wheel', e => {
     e.preventDefault();
     fovT = Math.max(MIN_FOV, Math.min(MAX_FOV, fovT + Math.sign(e.deltaY) * 6));
@@ -621,11 +591,10 @@ console.log('%c SAAD-TOUR v6 ', 'background:#F0964B;color:#000;font-weight:bold'
   }, { passive: true });
   stage.addEventListener('touchend', () => { pinch = null; }, { passive: true });
 
-  // سوییچ اسکلت / تکمیل‌شده
-  // دکمه نمای تکمیل‌شده واحد
-  if (bFin) bFin.addEventListener('click', reloadPano);  
- function reloadPano() {
+  // دکمه نمای تکمیل‌شده
+  if (bFin) bFin.addEventListener('click', reloadPano);
+  function reloadPano() {
     if (!curRoom) return;
-    loadPano(curRoom, skel ? 'skel' : 'fin', currentKey).then(setPano);
+    loadPano(curRoom, 'fin', currentKey).then(setPano);
   }
 })();
