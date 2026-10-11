@@ -1,8 +1,10 @@
 // ===============================
-// 🌐 تور مجازی سعدآباد — v7
-// پروژه‌های واقعی: سعدآباد ۱/۲/۳ (بهشهر)
+// 🌐 تور مجازی سعدآباد — v8
+// موتور یک‌بار در ابتدا انتخاب می‌شود:
+//   file://  → موتور 2D (نمایش عکس واقعی روی سیستم شما)
+//   https:// → موتور WebGL (پانورامای کامل ۳۶۰°)
 // ===============================
-console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bold');
+console.log('%c SAAD-TOUR v8 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bold');
 
 (function () {
   'use strict';
@@ -154,13 +156,13 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const IS_FILE = location.protocol === 'file:';
 
-  let mode2D = false;
+  let mode2D = false;   // 🧠 یک‌بار در ابتدا تعیین می‌شود و دیگر عوض نمی‌شود
   let flatImg = null;
-  let currentKey = null, curRoom = null, curTab = 'info', skel = false;
+  let currentKey = null, curRoom = null, curTab = 'info';
   let walkInit = false, selectedRoom = null;
 
   // ===============================
-  // موتور WebGL (هاست)
+  // موتور WebGL (فقط روی هاست)
   // ===============================
   const gl = canvas ? (canvas.getContext('webgl', { antialias: true }) ||
                        canvas.getContext('experimental-webgl')) : null;
@@ -253,31 +255,7 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
     return cv;
   }
 
-  function setPano(img) {
-    if (!img) return;
-    if (mode2D) {
-      flatImg = img;
-      show2D();
-      return;
-    }
-    try {
-      const src = prepareImage(img);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
-      console.log('[TOUR] تکسچر WebGL آپلود شد ✅');
-    } catch (err) {
-      console.warn('[TOUR] محدودیت امنیتی → سوییچ به 2D');
-      use2D();
-      flatImg = img;
-      show2D();
-    }
-  }
-
-  // ===============================
-  // 🖼 موتور 2D (سیستم خودتان — file://)
-  // ===============================
+  // ---------- 🖼 موتور 2D (file://) — بدون محدودیت امنیتی ----------
   function use2D() {
     if (mode2D) return;
     mode2D = true;
@@ -302,6 +280,29 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
     flatBox.style.backgroundImage = 'url("' + flatImg.src + '")';
     flatBox.style.backgroundSize = dw + 'px ' + dh + 'px';
     flatBox.style.backgroundPosition = (-shift) + 'px ' + y0 + 'px';
+  }
+
+  // ---------- انتخاب عکس برای نمایش ----------
+  function setPano(img) {
+    if (!img) return;
+    if (mode2D) {
+      flatImg = img;
+      show2D();
+      return;
+    }
+    try {
+      const src = prepareImage(img);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+      console.log('[TOUR] تکسچر WebGL آپلود شد ✅');
+    } catch (err) {
+      console.warn('[TOUR] خطای WebGL → سوییچ به 2D:', err && err.message);
+      use2D();
+      flatImg = img;
+      show2D();
+    }
   }
 
   // ===============================
@@ -347,20 +348,20 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
   }
 
   // ---------- لود عکس ----------
-  function loadPano(room, mode, key) {
+  function loadPano(room, key) {
     return new Promise(resolve => {
       let done = false;
       const finish = img => { if (!done) { done = true; resolve(img); } };
       const useSample = msg => {
         badge.textContent = msg;
-        const s = makeSample(room, mode, key);
+        const s = makeSample(room, 'fin', key);
         if (s.complete) finish(s); else s.onload = () => finish(s);
       };
       const src = 'images/pano/' + key + '/fin/' + room + '.jpg';
       badge.textContent = '⏳ در حال بارگذاری…';
       const img = new Image();
       img.onload = () => {
-        console.log('[TOUR] عکس لود شد ✅', src);
+        console.log('[TOUR] عکس لود شد ✅', src, img.naturalWidth + 'x' + img.naturalHeight);
         badge.textContent = IS_FILE
           ? '🖼 پانورامای واقعی — حالت ساده (روی هاست: کامل ۳۶۰°)'
           : '🖼 پانورامای واقعی ۳۶۰°';
@@ -385,6 +386,7 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
       el.innerHTML = '🚶<span>' + s.label + '</span>';
       el.addEventListener('click', ev => {
         ev.stopPropagation();
+        console.log('[TOUR] حرکت به:', s.to);
         goToRoom(s.to);
       });
       hsBox.appendChild(el);
@@ -420,7 +422,7 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
     buildInfo(data);
     preparePlan(data);
     selectTab('info');
-    skel = false; walkInit = false;
+    walkInit = false;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -458,8 +460,13 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
     );
     if (name === 'walk') {
       if (!walkInit && currentKey) {
-        const ok = initGL();
-        if (!ok) use2D();
+        // 🧠 تصمیم نهایی موتور — فقط یک‌بار:
+        if (IS_FILE) {
+          console.log('[TOUR] file:// → مستقیم حالت 2D');
+          use2D();
+        } else if (!initGL()) {
+          use2D();
+        }
         walkInit = true;
         requestAnimationFrame(renderLoop);
         setupRoom(TOURS[currentKey].start);
@@ -540,7 +547,7 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
     }));
     layoutSpots();
 
-    loadPano(id, 'fin', currentKey).then(setPano);
+    loadPano(id, currentKey).then(setPano);
   }
 
   function goToRoom(id) {
@@ -591,10 +598,47 @@ console.log('%c SAAD-TOUR v7 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
   }, { passive: true });
   stage.addEventListener('touchend', () => { pinch = null; }, { passive: true });
 
+  // ---------- حلقه رندر (ضدخرابی) ----------
+  let loopErrLogged = false;
+  function renderLoop() {
+    try {
+      if (curTab === 'walk') {
+        if (mode2D) {
+          yaw   += (yawT - yaw) * 0.2;
+          pitch += (pitchT - pitch) * 0.2;
+          show2D();
+        } else if (prog) {
+          yaw   += (yawT - yaw) * 0.14;
+          pitch += (pitchT - pitch) * 0.14;
+          fov   += (fovT - fov) * 0.12;
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          const w = canvas.clientWidth * dpr | 0;
+          const h = canvas.clientHeight * dpr | 0;
+          if (w > 0 && h > 0 && (canvas.width !== w || canvas.height !== h)) {
+            canvas.width = w; canvas.height = h;
+          }
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.uniform2f(uni.uRes, canvas.width, canvas.height);
+          gl.uniform1f(uni.uYaw, yaw);
+          gl.uniform1f(uni.uPitch, pitch);
+          gl.uniform1f(uni.uFov, fov);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+        placeSpots();
+      }
+    } catch (err) {
+      if (!loopErrLogged) {
+        console.warn('[TOUR] خطا در حلقه رندر:', err && err.message);
+        loopErrLogged = true;
+      }
+    }
+    requestAnimationFrame(renderLoop);
+  }
+
   // دکمه نمای تکمیل‌شده
   if (bFin) bFin.addEventListener('click', reloadPano);
   function reloadPano() {
     if (!curRoom) return;
-    loadPano(curRoom, 'fin', currentKey).then(setPano);
+    loadPano(curRoom, currentKey).then(setPano);
   }
 })();
