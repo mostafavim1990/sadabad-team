@@ -52,7 +52,7 @@ if (intro && navLogo) {
 }
 
 // ===============================
-// 🌟 ذرات طلایی شناور — هیرو و بخش اصالت ایرانی
+// 🌟 ذرات طلایی شناور — هیرو
 // ===============================
 function makeParticles(id, count) {
   const box = document.getElementById(id);
@@ -72,7 +72,6 @@ function makeParticles(id, count) {
   box.appendChild(frag);
 }
 makeParticles('heroParticles', 26);
-makeParticles('heritageParticles', 20);
 
 // ===============================
 // 🧭 اسکرول: منو + بخش فعال + نوار پیشرفت + دکمه بالا
@@ -139,20 +138,28 @@ const io = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 // ===============================
-// 🔢 شمارنده‌های آمار (اعداد فارسی)
 // ===============================
+// ===============================
+// 🔢 شمارنده‌های آمار (اعداد فارسی) — انیمیشن ۵ ثانیه‌ای موقع رسیدن به دید
+// ===============================
+const counted = new WeakSet();
+
 function animateCount(el) {
+  if (counted.has(el)) return;      // هر شمارنده فقط یک‌بار انیمیت می‌شود
+  counted.add(el);
   const target = +el.dataset.count;
-  const duration = 1800;
+  const duration = 5000;            // ✏️ مدت شمارش (میلی‌ثانیه) — الان ۵ ثانیه
   const start = performance.now();
   function tick(now) {
     const p = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - p, 3);
+    const eased = 1 - Math.pow(1 - p, 3);   // حرکت نرم: تند شروع، آرام تمام
     el.textContent = Math.round(target * eased).toLocaleString('fa-IR');
     if (p < 1) requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
 }
+
+// مسیر اصلی: وقتی بخش آمار وارد دید شد، شمارش شروع می‌شود
 const statIO = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -160,11 +167,27 @@ const statIO = new IntersectionObserver(entries => {
       statIO.unobserve(e.target);
     }
   });
-}, { threshold: .5 });
+}, { threshold: .3 });
+
 document.querySelectorAll('.stat-num').forEach(el => statIO.observe(el));
 
+// 🛡 ضمانت: اگر تا ۱۰ ثانیه بعد از لود، شمارنده‌ای هنوز شمرده نشده
+// (مثلاً کاربر مستقیم با لینک # آمار آمده)، اینجا اجرایش می‌کنیم
+setTimeout(() => {
+  const statsSection = document.querySelector('.stats');
+  if (!statsSection) return;
+  const rect = statsSection.getBoundingClientRect();
+  if (rect.top < window.innerHeight && rect.bottom > 0) {
+    document.querySelectorAll('.stat-num').forEach(animateCount);
+  }
+}, 10000);
+// 🛡 مسیر پشتیبان: ۳ ثانیه بعد از ورود، هر شمارنده‌ی دست‌نخورده را اجباری بشمار
+setTimeout(() => {
+  document.querySelectorAll('.stat-num').forEach(animateCount);
+}, 3000);
+
 // ===============================
-// 📊 نوارهای پیشرفت پروژه‌ها
+// 📊 نوارهای پیشرفت پروژه‌ها (گرم)
 // ===============================
 const progIO = new IntersectionObserver(entries => {
   entries.forEach(e => {
@@ -195,7 +218,6 @@ filterBtns.forEach(btn => {
 
 // ===============================
 // 💬 اسلایدر نظرات مشتریان
-// (✏️ متن‌ها در index.html قابل ویرایش هستند)
 // ===============================
 (function () {
   const track = document.getElementById('testiTrack');
@@ -263,6 +285,7 @@ if (contactForm) {
     window.location.href = 'mailto:info@saadabad.ir?subject=' + subject + '&body=' + body;
   });
 }
+
 // ===============================
 // 🖼 گالری پروژه‌ها — لایت‌باکس ۵ عکسی
 // ✏️ عکس‌ها: images/gallery/<کلید>-1.jpg تا -5.jpg
@@ -343,5 +366,20 @@ if (contactForm) {
       const h = card.querySelector('h3');
       open(key, h ? h.textContent : 'پروژه');
     });
+  });
+})();
+
+// ===============================
+// 🙏 قدردانی — نمایش همه‌ی عزیزان
+// ===============================
+(function () {
+  const btn = document.getElementById('peopleToggle');
+  const hidden = document.querySelectorAll('.person.extra');
+  if (!btn || !hidden.length) return;
+
+  btn.addEventListener('click', () => {
+    const expanded = btn.classList.toggle('expanded');
+    hidden.forEach(p => p.classList.toggle('hide', !expanded));
+    btn.textContent = expanded ? 'نمایش کمتر ↑' : 'نمایش همه ↓';
   });
 })();
