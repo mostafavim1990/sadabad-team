@@ -902,3 +902,25 @@ h4.tour-sub { color: var(--brand-deep); margin: 20px 0 12px; font-size: 1.05rem;
 .lb-meta { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-top: 1px solid rgba(185,205,143,.2); color: #EDE8DA; }
 .lb-title { font-weight: 700; font-size: .95rem; }
 .lb-count { font-size: .85rem; color: #B4C2B0; }
+/* ===============================================
+   📱 منوی موبایل — خوانایی کامل در هر پس‌زمینه
+=============================================== */
+@media (max-width: 900px) {
+  .nav-menu {
+    /* پس‌زمینه‌ی کاملاً مات — دیگر روی محتوای وسط صفحه گم نمی‌شود */
+    background: var(--dark);
+    border-inline-start: 3px solid var(--tan);
+    box-shadow: -20px 0 50px rgba(0, 0, 0, .5);
+  }
+  .nav-menu a {
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(185, 205, 143, .18);
+  }
+  /* هاور/لمس: پررنگ و واضح */
+  .nav-menu a:active,
+  .nav-menu a:hover { background: rgba(123, 160, 91, .3); }
+  .nav-menu a.active { color: var(--tan); background: transparent; }
+}
