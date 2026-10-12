@@ -149,7 +149,7 @@ console.log('%c SAAD-TOUR v8 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
   const rName    = document.getElementById('roomName');
   const rArea    = document.getElementById('roomArea');
   const rDesc    = document.getElementById('roomDesc');
-  const bFin     = document.getElementById('skFin');
+ 
   const stage    = document.getElementById('walkStage');
   if (!modal) return;
 
@@ -568,12 +568,13 @@ console.log('%c SAAD-TOUR v8 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
     dragging = true; px = e.clientX; py = e.clientY;
     try { stage.setPointerCapture(e.pointerId); } catch (err) {}
   });
-  stage.addEventListener('pointermove', e => {
+   stage.addEventListener('pointermove', e => {
     if (!dragging) return;
-    yawT  += (e.clientX - px) * 0.18;
-    pitchT = clampP(pitchT - (e.clientY - py) * 0.18);
+    yawT  -= (e.clientX - px) * 0.18;
+    pitchT = clampP(pitchT + (e.clientY - py) * 0.18);
     px = e.clientX; py = e.clientY;
   });
+
   ['pointerup', 'pointercancel'].forEach(ev =>
     stage.addEventListener(ev, () => { dragging = false; })
   );
@@ -635,10 +636,5 @@ console.log('%c SAAD-TOUR v8 ', 'background:#d4c4a8;color:#0d1b2a;font-weight:bo
     requestAnimationFrame(renderLoop);
   }
 
-  // دکمه نمای تکمیل‌شده
-  if (bFin) bFin.addEventListener('click', reloadPano);
-  function reloadPano() {
-    if (!curRoom) return;
-    loadPano(curRoom, currentKey).then(setPano);
-  }
+ 
 })();
