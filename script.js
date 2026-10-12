@@ -187,18 +187,155 @@ setTimeout(() => {
 }, 3000);
 
 // ===============================
-// 📊 نوارهای پیشرفت پروژه‌ها (گرم)
 // ===============================
+// 📊 نوارهای پیشرفت — شمارش معکوس روزانه با تقویم شمسی
+// ✏️ تاریخ شروع و مدت هر پروژه در index.html:
+//    data-start="jy-jm-jd"  data-months="N"
+// ===============================
+const jalBreaks = [-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+
+function jDiv(a, b) { return ~~(a / b); }
+function jMod(a, b) { return a - ~~(a / b) * b; }
+
+function jalCal(jy) {
+  const bl = jalBreaks.length;
+  const gy = jy + 621;
+  let leapJ = -14, jp = jalBreaks[0], jm, jump = 0, n, i;
+  for (i = 1; i < bl; i += 1) {
+    jm = jalBreaks[i];
+    jump = jm - jp;
+    if (jy < jm) break;
+    leapJ = leapJ + jDiv(jump, 33) * 8 + jDiv(jMod(jump, 33), 4);
+    jp = jm;
+  }
+  n = jy - jp;
+  leapJ = leapJ + jDiv(n, 33) * 8 + jDiv(jMod(n, 33) + 3, 4);
+  if (jMod(jump, 33) === 4 && jump - n === 4) leapJ += 1;
+  const leapG = jDiv(gy, 4) - jDiv((jDiv(gy, 100) + 1) * 3, 4) - 150;
+  const march = 20 + leapJ - leapG;
+  if (jump - n < 6) n = n - jump + jDiv(jump + 4, 33) * 33;
+  let leap = jMod(jMod(n + 1, 33) - 1, 4);
+  if (leap === -1) leap = 4;
+  return { leap: leap, gy: gy, march: march };
+}
+
+function g2d(gy, gm, gd) {
+  let d = jDiv((gy + jDiv(gm - 8, 6) + 100100) * 1461, 4)
+      + jDiv(153 * jMod(gm + 9, 12) + 2, 5)
+      + gd - 34840408;
+  d = d - jDiv(jDiv(gy + 100100 + jDiv(gm - 8, 6), 100) * 3, 4) + 752;
+  return d;
+}
+
+function d2g(jdn) {
+  let j = 4 * jdn + 139361631;
+  j = j + jDiv(jDiv(4 * jdn + 183187720, 146097) * 3, 4) * 4 - 3908;
+  const i = jDiv(jMod(j, 1461), 4) * 5 + 308;
+  const gd = jDiv(jMod(i, 153), 5) + 1;
+  const gm = jMod(jDiv(i, 153), 12) + 1;
+  const gy = jDiv(j, 1461) - 100100 + jDiv(8 - gm, 6);
+  return { gy: gy, gm: gm, gd: gd };
+}
+
+function j2d(jy, jm, jd) {
+  const r = jalCal(jy);
+  return g2d(r.gy, 3, r.march) + (jm - 1) * 31 - jDiv(jm, 7) * (jm - 7) + jd - 1;
+}
+
+function d2j(jdn) {
+  const gy = d2g(jdn).gy;
+  let jy = gy - 621;
+  const r = jalCal(jy);
+  const jdn1f = g2d(gy, 3, r.march);
+  let k = jdn - jdn1f, jm, jd;
+  if (k >= 0) {
+    if (k <= 185) {
+      jm = 1 + jDiv(k, 31);
+      jd = jMod(k, 31) + 1;
+      return { jy: jy, jm: jm, jd: jd };
+    }
+    k -= 186;
+  } else {
+    jy -= 1;
+    k += 179;
+    if (r.leap === 1) k += 1;
+  }
+  jm = 7 + jDiv(k, 30);
+  jd = jMod(k, 30) + 1;
+  return { jy: jy, jm: jm, jd: jd };
+}
+
+function jalMonthLength(jy, jm) {
+  if (jm <= 6) return 31;
+  if (jm <= 11) return 30;
+  return (jalCal(jy).leap === 0) ? 30 : 29;
+}
+
+// «امروز» به شماره‌ی روز شمسی
+const nowDate = new Date();
+const todayDay = g2d(nowDate.getFullYear(), nowDate.getMonth() + 1, nowDate.getDate());
+
+function faNum(n) { return n.toLocaleString('fa-IR'); }
+
+function computeSchedule(startStr, months) {
+  const p = startStr.split('-').map(Number);
+  const startDay = j2d(p[0], p[1], p[2]);
+
+  // پایان = شروع + N ماه شمسی
+  let ey = p[0], em = p[1] + months;
+  ey += Math.floor((em - 1) / 12);
+  em = ((em - 1) % 12) + 1;
+  const ed = Math.min(p[2], jalMonthLength(ey, em));
+  const endDay = j2d(ey, em, ed);
+
+  const total = endDay - startDay;
+  const elapsed = todayDay - startDay;
+  const remaining = endDay - todayDay;
+
+  let percent = Math.round((elapsed / total) * 100);
+  percent = Math.max(0, Math.min(100, percent));
+
+  return { percent: percent, remainingDays: remaining, done: remaining <= 0 };
+}
+
+// اعمال روی هر کارت پروژه
+document.querySelectorAll('.ongoing-card').forEach(card => {
+  const fill = card.querySelector('.progress-fill');
+  if (!fill || !fill.dataset.start) return;
+
+  const s = computeSchedule(fill.dataset.start, +fill.dataset.months);
+  fill.dataset.final = s.percent;   // برای انیمیشن پر شدن هنگام دید
+
+  const num = card.querySelector('.prog-num');
+  if (num) num.textContent = faNum(s.percent) + '٪';
+
+  const cd = card.querySelector('.countdown');
+  if (cd) {
+    if (s.done) {
+      cd.innerHTML = '⏰ پروژه به مرحله‌ی تحویل رسیده است';
+    } else if (s.remainingDays <= 45) {
+      cd.innerHTML = '⏳ <b>' + faNum(s.remainingDays) + '</b> روز تا تحویل';
+    } else {
+      const m = Math.floor(s.remainingDays / 30.44);
+      const d = s.remainingDays - Math.round(m * 30.44);
+      cd.innerHTML = '⏳ <b>' + faNum(m) + '</b> ماه و <b>' + faNum(d) + '</b> روز تا تحویل';
+    }
+  }
+});
+
+// انیمیشن پر شدن نوار هنگام رسیدن به دید
 const progIO = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
       const fill = e.target.querySelector('.progress-fill');
-      if (fill) fill.style.width = fill.dataset.progress + '%';
+      if (fill && fill.dataset.final) fill.style.width = fill.dataset.final + '%';
       progIO.unobserve(e.target);
     }
   });
 }, { threshold: .4 });
 document.querySelectorAll('.progress').forEach(el => progIO.observe(el));
+
+
 
 // ===============================
 // 🔍 فیلتر گالری
