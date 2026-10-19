@@ -105,7 +105,19 @@ tr.take td.amount{color:var(--take)}
 const $ = id => document.getElementById(id);
 const fmt = n => typeof n === "number" && Number.isFinite(n)
   ? new Intl.NumberFormat("fa-IR").format(n) : "—";
-const safe = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&","<":"<",">":">","\"":""","'":"&#39;"}[c]));
+function safe(v){
+  const amp = "&" + "amp;";
+  const lt = "&" + "lt;";
+  const gt = "&" + "gt;";
+  const quot = "&" + "quot;";
+  const apos = "&" + "#39;";
+  return String(v ?? "")
+    .replaceAll("&", amp)
+    .replaceAll("<", lt)
+    .replaceAll(">", gt)
+    .replaceAll('"', quot)
+    .replaceAll("'", apos);
+}
 
 let data = null, month = 0, person = "همه", kind = "همه";
 const PEOPLE = ["همه", "داود", "محمد", "امید"];
