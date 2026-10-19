@@ -741,7 +741,13 @@
 <script src="script.js"></script>
 <script src="tour.js"></script>
 <!-- ═══════════════════════════════════════════════════════
-     بلوک «ورود مدیر پروژه» — نسخه ۱
+     بلوک «ورود مدیر پروژه» — نسخه ۲.۱
+     • سه رمز ورود مجاز: davood63 / sadra68 / omid77
+     • رمز اشتباه → پیغام «رمز عبور صحیح نیست.»
+     • رمز درست → صفحه‌ی انتخاب گزینه: چیت سازی، فرهنگیان، بشارتی، فایل حسابداری
+     • لینک هر گزینه در قسمت MGR_LINKS (داخل اسکریپت پایین) تنظیم می‌شود
+       (نسخه ۲.۱: لینک چیت‌سازی و فرهنگیان وصل شد؛ جای دو لینک دیگر
+        داخل MGR_LINKS با کامنت مشخص شده — فقط بین دو گیومه بگذارید)
      برای حذف کامل این قابلیت، فقط همین بلوک را پاک کنید.
 ════════════════════════════════════════════════════════ -->
 <style>
@@ -851,6 +857,45 @@
   @media (max-width:768px){
     #mgrBtn{ font-size:12.5px; padding:7px 12px; }
   }
+
+
+  /* ---------- مرحله ۲: انتخاب گزینه (نسخه ۲) ---------- */
+  .mgr-card-wide{ width:min(94vw,470px); }
+  .mgr-options{
+    display:grid; grid-template-columns:1fr 1fr; gap:11px;
+    margin:0 0 4px;
+  }
+  .mgr-opt{
+    appearance:none; -webkit-appearance:none; cursor:pointer; font-family:inherit;
+    background:#fff; border:1.5px solid #d8d2c4; border-radius:14px;
+    padding:14px 10px 12px; text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:7px;
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .mgr-opt:hover{ transform:translateY(-2px); border-color:#7ba05b; box-shadow:0 8px 18px rgba(13,76,60,.14); }
+  .mgr-opt:focus-visible{ outline:2px solid #E8B25C; outline-offset:2px; }
+  .mgr-opt-ico{
+    width:42px; height:42px; border-radius:12px; flex:0 0 42px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#2d5a4a,#0d4c3c); color:#E8B25C;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+  }
+  .mgr-opt-ico svg{ width:21px; height:21px; }
+  .mgr-opt.mgr-gold .mgr-opt-ico{ background:linear-gradient(135deg,#E8B25C,#C9782C); color:#0d4c3c; }
+  .mgr-opt h4{ margin:0; font-size:14px; font-weight:800; color:#0d4c3c; }
+  .mgr-opt small{ font-size:11px; color:#8b8677; }
+  .mgr-back{
+    width:100%; border:none; cursor:pointer; border-radius:12px;
+    padding:11px 16px; margin-top:6px; font-family:inherit; font-size:13.5px; font-weight:700;
+    color:#2d5a4a; background:rgba(13,76,60,.08);
+    transition:background .2s;
+  }
+  .mgr-back:hover{ background:rgba(13,76,60,.15); }
+  @media (max-width:420px){
+    .mgr-options{ gap:8px; }
+    .mgr-opt h4{ font-size:12.5px; }
+    .mgr-opt small{ font-size:10px; }
+  }
 </style>
 
 <button id="mgrBtn" type="button" aria-label="ورود مدیر پروژه">
@@ -881,24 +926,85 @@
     <div class="mgr-err" id="mgrErr"></div>
     <button class="mgr-go" id="mgrGo" type="button">ورود به پنل</button>
   </div>
+
+  <!-- مرحله ۲: انتخاب گزینه — بعد از وارد کردن رمز درست نمایش داده می‌شود -->
+  <div class="mgr-card mgr-card-wide" id="mgrPickCard" role="dialog" aria-modal="true" aria-label="انتخاب گزینه" style="display:none">
+    <button class="mgr-x" id="mgrX2" type="button" aria-label="بستن">✕</button>
+    <div class="mgr-badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4"/></svg>
+    </div>
+    <h3 class="mgr-title">رمز تأیید شد</h3>
+    <p class="mgr-sub">یکی از گزینه‌های زیر را انتخاب کنید تا صفحه‌ی مورد نظر باز شود.</p>
+    <div class="mgr-options">
+      <button class="mgr-opt" data-key="chitsazi" type="button">
+        <span class="mgr-opt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4"/></svg></span>
+        <h4>پروژه چیت سازی</h4><small>صفحه و اطلاعات پروژه</small>
+      </button>
+      <button class="mgr-opt" data-key="farhangian" type="button">
+        <span class="mgr-opt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18M10 7h4M10 11h4M10 15h4"/></svg></span>
+        <h4>پروژه فرهنگیان</h4><small>صفحه و اطلاعات پروژه</small>
+      </button>
+      <button class="mgr-opt" data-key="besharati" type="button">
+        <span class="mgr-opt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"/></svg></span>
+        <h4>پروژه بشارتی</h4><small>صفحه و اطلاعات پروژه</small>
+      </button>
+      <button class="mgr-opt mgr-gold" data-key="accounting" type="button">
+        <span class="mgr-opt-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 7h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg></span>
+        <h4>فایل حسابداری</h4><small>گزارش‌های مالی</small>
+      </button>
+    </div>
+    <div class="mgr-err" id="mgrPickErr"></div>
+    <button class="mgr-back" id="mgrBack" type="button">↩ بازگشت به ورود رمز</button>
+  </div>
 </div>
 
 <script>
 (function(){
-  /* ════════ تنظیمات — فقط این دو خط را عوض کنید ════════ */
-  var MGR_PASS = "sadabad1405";          /* ← رمز دسترسی مدیر (حتماً عوضش کنید) */
-  var MGR_LINK = "https://example.com";  /* ← لینک پنل مدیر را اینجا بگذارید */
+  /* ════════ تنظیمات — فقط همین قسمت را عوض کنید ════════ */
+
+  /* رمزهای مجاز ورود — هر کدام از این‌ها قبول است */
+  var MGR_PASSWORDS = ["davood63", "sadra68", "omid77"];
+
+  /* لینک هر گزینه — فقط همین قسمت را ویرایش کنید.
+     قانون ساده: لینک را فقط بین دو گیومه " " بگذارید.
+     گزینه‌ای که لینکش خالی بماند، با کلیک پیام
+     «لینک این گزینه هنوز تنظیم نشده است» می‌دهد. */
+  var MGR_LINKS = {
+
+    chitsazi:   "https://mostafavim1990.github.io/chitsazi/",   /* ✔ لینک وصل شد */
+    farhangian: "https://mostafavim1990.github.io/farhangian/", /* ✔ لینک وصل شد */
+
+    /* ═══════════════════════════════════════════════════
+       جای دو لینک آینده — همین‌جا (خالی است)
+       به محض آماده شدن لینک، فقط آن را بین دو گیومه " "
+       بگذارید و فایل را ذخیره کنید؛ همین!
+       مثال:
+       besharati: "https://mostafavim1990.github.io/besharati/",
+       ═══════════════════════════════════════════════════ */
+    besharati:  "",   /* ← لینک «پروژه بشارتی» را اینجا بگذارید */
+    accounting: ""    /* ← لینک «فایل حسابداری» را اینجا بگذارید */
+  };
   /* ═════════════════════════════════════════════════════ */
 
   var btn  = document.getElementById('mgrBtn');
   var ov   = document.getElementById('mgrOverlay');
   var card = document.getElementById('mgrCard');
+  var pick = document.getElementById('mgrPickCard');
   var inp  = document.getElementById('mgrPass');
   var err  = document.getElementById('mgrErr');
   var go   = document.getElementById('mgrGo');
   var eye  = document.getElementById('mgrEye');
   var eo   = document.getElementById('mgrEyeOpen');
   var ef   = document.getElementById('mgrEyeOff');
+  var pickErr = document.getElementById('mgrPickErr');
+  var field = document.getElementById('mgrField');
+
+  /* نمایش مرحله ۱ (رمز) یا مرحله ۲ (انتخاب گزینه) */
+  function showStep(n){
+    card.style.display = (n === 1) ? '' : 'none';
+    pick.style.display = (n === 2) ? '' : 'none';
+    pickErr.textContent = '';
+  }
 
   /* جای دکمه: دسکتاپ داخل منوی بالا، موبایل دکمه‌ی شناور گوشه صفحه */
   function placeBtn(){
@@ -922,6 +1028,8 @@
   function openM(){
     ov.classList.add('mgr-open');
     err.textContent = ''; inp.value = '';
+    field.classList.remove('mgr-wrong');
+    showStep(1);
     document.body.style.overflow = 'hidden';
     setTimeout(function(){ inp.focus(); }, 260);
   }
@@ -931,6 +1039,7 @@
   }
   btn.addEventListener('click', openM);
   document.getElementById('mgrX').addEventListener('click', closeM);
+  document.getElementById('mgrX2').addEventListener('click', closeM);
   ov.addEventListener('click', function(e){ if (e.target === ov) closeM(); });
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && ov.classList.contains('mgr-open')) closeM();
@@ -943,23 +1052,57 @@
     ef.style.display = show ? 'block' : 'none';
   });
 
+  /* بررسی رمز — هر یک از رمزهای تعریف‌شده در MGR_PASSWORDS قبول است */
   function tryLogin(){
-    document.getElementById('mgrField').classList.remove('mgr-wrong');
-    if (inp.value.trim() === MGR_PASS){
-      window.open(MGR_LINK, '_blank', 'noopener'); /* باز شدن لینک در تب جدید */
-      closeM();
+    field.classList.remove('mgr-wrong');
+    var entered = String(inp.value || '').trim().toLowerCase();
+    if (!entered){
+      err.textContent = 'لطفاً رمز عبور را وارد کنید.';
+      return;
+    }
+    var ok = false;
+    for (var i = 0; i < MGR_PASSWORDS.length; i++){
+      if (entered === String(MGR_PASSWORDS[i]).trim().toLowerCase()){ ok = true; break; }
+    }
+    if (ok){
+      err.textContent = '';
+      showStep(2); /* رمز درست بود → صفحه‌ی انتخاب گزینه باز می‌شود */
     } else {
-      err.textContent = 'رمز اشتباه است؛ دوباره تلاش کنید.';
+      err.textContent = 'رمز عبور صحیح نیست.';
       card.classList.remove('mgr-shake'); void card.offsetWidth;
       card.classList.add('mgr-shake');
-      document.getElementById('mgrField').classList.add('mgr-wrong');
+      field.classList.add('mgr-wrong');
       inp.select();
     }
   }
   go.addEventListener('click', tryLogin);
   inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') tryLogin(); });
+
+  /* بازگشت از مرحله انتخاب به مرحله رمز */
+  document.getElementById('mgrBack').addEventListener('click', function(){
+    showStep(1);
+    inp.value = ''; err.textContent = '';
+    setTimeout(function(){ inp.focus(); }, 60);
+  });
+
+  /* کلیک روی هر گزینه → باز شدن لینک آن در تب جدید */
+  Array.prototype.forEach.call(document.querySelectorAll('.mgr-opt'), function(el){
+    el.addEventListener('click', function(){
+      var key  = el.getAttribute('data-key');
+      var link = MGR_LINKS[key];
+      if (link && String(link).trim() !== ''){
+        window.open(String(link).trim(), '_blank', 'noopener');
+        closeM();
+      } else {
+        pickErr.textContent = 'لینک این گزینه هنوز تنظیم نشده است.';
+        el.classList.remove('mgr-shake'); void el.offsetWidth;
+        el.classList.add('mgr-shake');
+      }
+    });
+  });
 })();
 </script>
+
 <!-- ═══════════════ پایان بلوک ورود مدیر پروژه ═══════════════ -->
 </body>
 </html>
