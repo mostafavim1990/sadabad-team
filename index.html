@@ -742,9 +742,7 @@
 <script src="tour.js"></script>
 <!-- ═══════════════════════════════════════════════════════
      بلوک «ورود مدیر پروژه» — نسخه ۲.۲
-     • سه رمز ورود مجاز: davood63 / sadra68 / omid77
-     • رمز اشتباه → پیغام «رمز عبور صحیح نیست.»
-     • رمز درست → صفحه‌ی انتخاب گزینه با ۴ گزینه
+     • بدون رمز: با کلیک روی «ورود مدیر پروژه» مستقیم صفحه‌ی انتخاب گزینه (۴ گزینه) باز می‌شود
      • نسخه ۲.۲: هر چهار لینک وصل شد (نسخه‌ی اصلاح‌شده —
        در نسخه قبل یک علامت " اضافه باعث خاموشی کل بلوک شده بود)
      برای حذف کامل این قابلیت، فقط همین بلوک را پاک کنید.
@@ -905,34 +903,13 @@
 </button>
 
 <div id="mgrOverlay">
-  <div class="mgr-card" id="mgrCard" role="dialog" aria-modal="true" aria-label="ورود مدیر پروژه">
-    <button class="mgr-x" id="mgrX" type="button" aria-label="بستن">✕</button>
-    <div class="mgr-badge" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 20 5.5v6c0 4.8-3.4 8.4-8 10-4.6-1.6-8-5.2-8-10v-6z"/><circle cx="12" cy="10" r="2.4"/><path d="M7.8 17.2c.8-2 2.3-3.2 4.2-3.2s3.4 1.2 4.2 3.2"/></svg>
-    </div>
-    <h3 class="mgr-title">ورود مدیر پروژه</h3>
-    <p class="mgr-sub">برای مشاهده‌ی پنل مدیریت پروژه، رمز دسترسی را وارد کنید.</p>
-    <div class="mgr-field" id="mgrField">
-      <span class="mgr-lock" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
-      </span>
-      <input id="mgrPass" type="password" placeholder="رمز دسترسی" autocomplete="current-password">
-      <button class="mgr-eye" id="mgrEye" type="button" aria-label="نمایش یا پنهان کردن رمز">
-        <svg id="mgrEyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
-        <svg id="mgrEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M2 12s3.6-6.5 10-6.5c2 0 3.7.6 5.1 1.5M22 12s-3.6 6.5-10 6.5c-2 0-3.7-.6-5.1-1.5"/><path d="M4 20 20 4"/></svg>
-      </button>
-    </div>
-    <div class="mgr-err" id="mgrErr"></div>
-    <button class="mgr-go" id="mgrGo" type="button">ورود به پنل</button>
-  </div>
-
-  <!-- مرحله ۲: انتخاب گزینه — بعد از وارد کردن رمز درست نمایش داده می‌شود -->
-  <div class="mgr-card mgr-card-wide" id="mgrPickCard" role="dialog" aria-modal="true" aria-label="انتخاب گزینه" style="display:none">
+  <!-- صفحه‌ی انتخاب گزینه — با کلیک روی دکمه‌ی ورود مدیر نمایش داده می‌شود -->
+  <div class="mgr-card mgr-card-wide" id="mgrPickCard" role="dialog" aria-modal="true" aria-label="انتخاب گزینه">
     <button class="mgr-x" id="mgrX2" type="button" aria-label="بستن">✕</button>
     <div class="mgr-badge" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4"/></svg>
     </div>
-    <h3 class="mgr-title">رمز تأیید شد</h3>
+    <h3 class="mgr-title">انتخاب گزینه</h3>
     <p class="mgr-sub">یکی از گزینه‌های زیر را انتخاب کنید تا صفحه‌ی مورد نظر باز شود.</p>
     <div class="mgr-options">
       <button class="mgr-opt" data-key="chitsazi" type="button">
@@ -953,16 +930,12 @@
       </button>
     </div>
     <div class="mgr-err" id="mgrPickErr"></div>
-    <button class="mgr-back" id="mgrBack" type="button">↩ بازگشت به ورود رمز</button>
   </div>
 </div>
 
 <script>
 (function(){
   /* ════════ تنظیمات — فقط همین قسمت را عوض کنید ════════ */
-
-  /* رمزهای مجاز ورود — هر کدام از این‌ها قبول است */
-  var MGR_PASSWORDS = ["davood63", "sadra68", "omid77"];
 
   /* لینک هر گزینه — فقط همین قسمت را ویرایش کنید.
      قانون ساده: لینک را فقط بین دو گیومه " " بگذارید
@@ -984,21 +957,12 @@
 
   var btn  = document.getElementById('mgrBtn');
   var ov   = document.getElementById('mgrOverlay');
-  var card = document.getElementById('mgrCard');
   var pick = document.getElementById('mgrPickCard');
-  var inp  = document.getElementById('mgrPass');
-  var err  = document.getElementById('mgrErr');
-  var go   = document.getElementById('mgrGo');
-  var eye  = document.getElementById('mgrEye');
-  var eo   = document.getElementById('mgrEyeOpen');
-  var ef   = document.getElementById('mgrEyeOff');
   var pickErr = document.getElementById('mgrPickErr');
-  var field = document.getElementById('mgrField');
 
-  /* نمایش مرحله ۱ (رمز) یا مرحله ۲ (انتخاب گزینه) */
-  function showStep(n){
-    card.style.display = (n === 1) ? '' : 'none';
-    pick.style.display = (n === 2) ? '' : 'none';
+  /* نمایش صفحه‌ی انتخاب گزینه */
+  function showPick(){
+    pick.style.display = '';
     pickErr.textContent = '';
   }
 
@@ -1023,62 +987,18 @@
 
   function openM(){
     ov.classList.add('mgr-open');
-    err.textContent = ''; inp.value = '';
-    field.classList.remove('mgr-wrong');
-    showStep(1);
+    showPick();
     document.body.style.overflow = 'hidden';
-    setTimeout(function(){ inp.focus(); }, 260);
   }
   function closeM(){
     ov.classList.remove('mgr-open');
     document.body.style.overflow = '';
   }
   btn.addEventListener('click', openM);
-  document.getElementById('mgrX').addEventListener('click', closeM);
   document.getElementById('mgrX2').addEventListener('click', closeM);
   ov.addEventListener('click', function(e){ if (e.target === ov) closeM(); });
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && ov.classList.contains('mgr-open')) closeM();
-  });
-
-  eye.addEventListener('click', function(){
-    var show = inp.type === 'password';
-    inp.type = show ? 'text' : 'password';
-    eo.style.display = show ? 'none' : 'block';
-    ef.style.display = show ? 'block' : 'none';
-  });
-
-  /* بررسی رمز — هر یک از رمزهای تعریف‌شده در MGR_PASSWORDS قبول است */
-  function tryLogin(){
-    field.classList.remove('mgr-wrong');
-    var entered = String(inp.value || '').trim().toLowerCase();
-    if (!entered){
-      err.textContent = 'لطفاً رمز عبور را وارد کنید.';
-      return;
-    }
-    var ok = false;
-    for (var i = 0; i < MGR_PASSWORDS.length; i++){
-      if (entered === String(MGR_PASSWORDS[i]).trim().toLowerCase()){ ok = true; break; }
-    }
-    if (ok){
-      err.textContent = '';
-      showStep(2); /* رمز درست بود → صفحه‌ی انتخاب گزینه باز می‌شود */
-    } else {
-      err.textContent = 'رمز عبور صحیح نیست.';
-      card.classList.remove('mgr-shake'); void card.offsetWidth;
-      card.classList.add('mgr-shake');
-      field.classList.add('mgr-wrong');
-      inp.select();
-    }
-  }
-  go.addEventListener('click', tryLogin);
-  inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') tryLogin(); });
-
-  /* بازگشت از مرحله انتخاب به مرحله رمز */
-  document.getElementById('mgrBack').addEventListener('click', function(){
-    showStep(1);
-    inp.value = ''; err.textContent = '';
-    setTimeout(function(){ inp.focus(); }, 60);
   });
 
   /* کلیک روی هر گزینه → باز شدن لینک آن در تب جدید */

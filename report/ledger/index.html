@@ -6,13 +6,14 @@
 <meta name="theme-color" content="#1c1917">
 <title>حسابداری شرکا</title>
 <style>
+@font-face{font-family:"BNazanin";src:local("B Nazanin"),local("BNazanin"),url("fonts/BNazanin.woff2") format("woff2"),url("fonts/BNazanin.ttf") format("truetype");font-display:swap}
 :root{
   --bg:#f4f1ea;--card:#fffdf9;--ink:#1c1917;--muted:#6b645c;--line:#e7e0d6;
   --davood:#1d4ed8;--mohammad:#0f766e;--omid:#b45309;
   --pay:#166534;--take:#9f1239;--shadow:0 10px 30px #1c191708;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,"Segoe UI",sans-serif;line-height:1.7}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"BNazanin","B Nazanin",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.75}
 .wrap{max-width:1180px;margin:auto;padding:28px 18px 56px}
 header{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
 .eyebrow{color:var(--muted);font-size:13px}
@@ -63,12 +64,38 @@ tr.take td.amount{color:var(--take)}
 .status{color:var(--muted);font-size:13px;margin-top:8px}
 .error{background:#fff1f2;color:#9f1239;padding:10px 12px;border-radius:10px}
 .hidden{display:none!important}
+
+#gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 20% 15%,#2563eb55,transparent 45%),radial-gradient(circle at 85% 85%,#0f766e55,transparent 45%),linear-gradient(135deg,#0f0d0c,#1c1917 55%,#292524);backdrop-filter:blur(6px);transition:opacity .45s ease,visibility .45s}
+#gate.hide{opacity:0;visibility:hidden;pointer-events:none}
+.gate-box{width:100%;max-width:400px;background:#fffdf9ee;border:1px solid #ffffff55;border-radius:24px;padding:34px 28px 28px;text-align:center;box-shadow:0 30px 70px #00000066;animation:pop .5s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
+.gate-icon{width:72px;height:72px;margin:-70px auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1d4ed8,#0f766e);box-shadow:0 12px 28px #1d4ed855;border:4px solid #fff}
+.gate-icon svg{width:34px;height:34px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gate-box h2{margin:0 0 4px;font-size:24px;color:var(--ink)}
+.gate-box p{margin:0 0 20px;color:var(--muted);font-size:15px}
+.gate-field{position:relative;margin-bottom:10px}
+.gate-field input{width:100%;font:inherit;font-size:17px;text-align:center;letter-spacing:2px;direction:ltr;border:2px solid var(--line);border-radius:13px;padding:12px 44px;background:#faf7f2;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.gate-field input:focus{border-color:#1d4ed8;box-shadow:0 0 0 4px #1d4ed822}
+.gate-field.bad input{border-color:#dc2626;box-shadow:0 0 0 4px #dc262622}
+.gate-eye{position:absolute;top:50%;right:10px;transform:translateY(-50%);border:0;background:none;cursor:pointer;font-size:19px;padding:4px;line-height:1;opacity:.6}
+.gate-eye:hover{opacity:1}
+.gate-msg{min-height:26px;color:#b91c1c;font-weight:bold;font-size:15px;margin-bottom:8px}
+.gate-box .btn{width:100%;padding:12px;font-size:17px;font-weight:bold;border:0;color:#fff;background:linear-gradient(135deg,#1d4ed8,#1e40af)}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+body.locked .wrap{display:none}
 @media(max-width:860px){
   .claims,.layout{grid-template-columns:1fr}
 }
 </style>
 </head>
-<body>
+<body class="locked">
+<div id="gate"><form class="gate-box" id="gateForm" autocomplete="off">
+<div class="gate-icon"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+<h2>ورود به حسابداری شرکا</h2><p>برای مشاهده گزارش، لطفاً رمز عبور را وارد کنید.</p>
+<div class="gate-field" id="gateField"><input type="password" id="gatePass" placeholder="رمز عبور" autofocus autocapitalize="off" autocorrect="off" spellcheck="false"><button type="button" class="gate-eye" id="gateEye" aria-label="نمایش رمز">👁</button></div>
+<div class="gate-msg" id="gateMsg" role="alert"></div>
+<button class="btn" type="submit">ورود</button></form></div>
 <main class="wrap">
   <header>
     <div>
@@ -243,7 +270,20 @@ async function load(){
 }
 $("reload").onclick = load;
 $("q").oninput = () => data && renderTable();
-load();
+const HASHES=["d6eeee3753896a8e2f787e2aea7c98cb928c470e7cec9521611b554575897212","129109a2e615337868655325a36baf42c85215b67159e0209a588ef500fe37d3","35919aecb68ba703230812729ad27129912fa9b6d63e78897e45e2049b93b612"];
+async function sha256(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+function unlock(){document.body.classList.remove('locked');$('gate').classList.add('hide');load();}
+$('gateEye').addEventListener('click',()=>{const i=$('gatePass');i.type=i.type==='password'?'text':'password';});
+$('gatePass').addEventListener('input',()=>{$('gateField').classList.remove('bad');$('gateMsg').textContent='';});
+$('gateForm').addEventListener('submit',async e=>{e.preventDefault();const v=$('gatePass').value.trim().toLowerCase();
+  if(!(window.crypto&&crypto.subtle)){$('gateMsg').textContent='مرورگر شما از بررسی امن رمز پشتیبانی نمی‌کند.';return;}
+  const h=await sha256(v);
+  if(HASHES.includes(h)){try{sessionStorage.setItem('dash_ok','1')}catch(_){}unlock();}
+  else{$('gateMsg').textContent='رمز ورود اشتباه است.';$('gateField').classList.add('bad');const b=$('gateForm');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('gatePass').select();}
+});
+let remembered=false;try{remembered=sessionStorage.getItem('dash_ok')==='1'}catch(_){}
+if(remembered)unlock();else setTimeout(()=>$('gatePass').focus(),100);
+
 </script>
 </body>
 </html>
