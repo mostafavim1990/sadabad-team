@@ -49,6 +49,16 @@ def clean(v):
     if isinstance(v,(int,float)): return v
     return str(v).strip()
 
+def sort_date_key(value):
+    parsed = parse_jalali(value)
+    # تاریخ‌های نامشخص در انتهای فهرست قرار می‌گیرند.
+    return parsed if parsed is not None else (9999, 99, 99)
+
+def is_passed(status):
+    text = normalize_digits(status).replace("‌", " ").replace("-", " ").strip()
+    text = " ".join(text.split())
+    return "پاس شده" in text or "وصول شده" in text or "نقد شده" in text
+
 def main():
     try:
         import openpyxl
@@ -80,8 +90,16 @@ def main():
             selected=[values[0],values[1],values[4],values[6],values[7]]
             if not any(v not in ("",None) for v in selected): continue
             project,recipient,status,due_date,amount=[clean(v) for v in selected]
+            # چک‌های پاس‌شده/وصول‌شده در داشبورد نمایش داده نمی‌شوند.
+            if is_passed(status):
+                continue
             records.append({"project":project,"recipient":recipient,"status":status,
-                            "dueDate":due_date,"amount":amount,"period":get_period(due_date,today)})
+                            "dueDate":due_date,"amount":amount,"period":get_period(due_date,today),
+                            "_sortDate":sort_date_key(due_date)})
+        # مرتب‌سازی بر اساس نزدیک‌ترین تاریخ سررسید؛ تاریخ‌های نامشخص در انتها.
+        records.sort(key=lambda row: row["_sortDate"])
+        for row in records:
+            row.pop("_sortDate", None)
         workbook.close(); workbook=None
         payload={"updatedAt":f"{today[0]:04d}/{today[1]:02d}/{today[2]:02d}","rows":records}
         html=template_path.read_text(encoding="utf-8")

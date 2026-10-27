@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>وضعیت چک‌های صادر شده</title>
+<style>
+:root{--bg:#f3f6fb;--panel:#fff;--ink:#182230;--muted:#697586;--line:#e2e8f0;--past:#e5e7eb;--past-border:#a8afb9;--current:#e0f5e7;--current-border:#45a56a;--next:#ffe5ee;--next-border:#dc7397;--shadow:0 8px 24px rgba(24,34,48,.06)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"B Nazanin",Tahoma,"Segoe UI",sans-serif;font-size:17px}
+main{max-width:1200px;margin:auto;padding:22px}
+.hero{background:linear-gradient(135deg,#173d75,#2e67b4);color:#fff;border-radius:22px;padding:24px 26px;box-shadow:var(--shadow)}
+.hero h1{margin:0 0 8px;font-size:clamp(24px,4vw,34px);font-weight:800}.hero p{margin:0;color:#e3ecff;font-size:15px}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.stat .label{color:var(--muted);font-size:14px}.stat .value{font-weight:800;font-size:clamp(18px,2.8vw,25px);margin-top:5px;overflow-wrap:anywhere}
+.controls{display:flex;gap:10px;align-items:center;margin:16px 0;flex-wrap:wrap}
+.search{flex:1;min-width:220px;border:1px solid #d6deea;background:#fff;border-radius:12px;padding:12px 14px;font:inherit;outline:none}
+.search:focus{border-color:#2859a8;box-shadow:0 0 0 3px #2859a81a}.count{color:var(--muted);font-size:14px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.legend span{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#465164;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.dot.past{background:var(--past-border)}.dot.current{background:var(--current-border)}.dot.next{background:var(--next-border)}
+.table-wrap{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%}thead th{background:#edf2f9;color:#334155;text-align:right;font-weight:800;padding:13px 14px;white-space:nowrap;border-bottom:1px solid var(--line)}
+tbody td{padding:12px 14px;border-bottom:1px solid #edf0f5;vertical-align:middle}tbody tr:last-child td{border-bottom:0}
+tbody tr.past{background:var(--past)}tbody tr.current{background:var(--current)}tbody tr.next{background:var(--next)}
+tbody tr.past td:first-child{border-right:4px solid var(--past-border)}tbody tr.current td:first-child{border-right:4px solid var(--current-border)}tbody tr.next td:first-child{border-right:4px solid var(--next-border)}
+.amount{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}.status{display:inline-block;border:1px solid #00000012;background:#ffffffa8;border-radius:999px;padding:3px 9px;font-size:13px;white-space:nowrap}
+.mobile-list{display:none}.empty{padding:28px;text-align:center;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:13px;padding:18px 0 4px}
+@media(max-width:760px){
+ main{padding:12px}.hero{padding:19px 17px;border-radius:17px}.summary{grid-template-columns:1fr 1fr;gap:9px}.stat{padding:12px}.summary .stat:last-child{grid-column:1/-1}
+ .table-wrap{display:none}.mobile-list{display:grid;gap:10px}
+ .cheque-card{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff;box-shadow:0 4px 14px rgba(24,34,48,.05)}
+ .cheque-card.past{background:var(--past);border-color:var(--past-border)}.cheque-card.current{background:var(--current);border-color:var(--current-border)}.cheque-card.next{background:var(--next);border-color:var(--next-border)}
+ .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px 14px 9px}.recipient{font-weight:800;font-size:18px;overflow-wrap:anywhere}
+ .project{color:#596579;font-size:13px;margin-top:3px}.card-amount{font-size:18px;font-weight:900;white-space:nowrap;text-align:left}
+ .card-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 14px}.detail{background:#ffffffa6;border-radius:10px;padding:8px 10px;min-width:0}
+ .detail .k{font-size:12px;color:#697586}.detail .v{font-size:14px;font-weight:700;overflow-wrap:anywhere;margin-top:2px}
+ .controls{margin:12px 0}.search{min-width:0;width:100%}
+}
+</style>
+</head>
+<body>
+<main>
+<header class="hero"><h1>وضعیت چک‌های صادر شده</h1><p>نمایش فقط‌خواندنی اطلاعات استخراج‌شده از فایل اکسل</p></header>
+<section class="summary" aria-label="خلاصه">
+<div class="stat"><div class="label">تعداد چک‌های نمایش‌داده‌شده</div><div class="value" id="count">—</div></div>
+<div class="stat"><div class="label">مجموع مبالغ</div><div class="value" id="total">—</div></div>
+<div class="stat"><div class="label">آخرین به‌روزرسانی</div><div class="value" id="updated" style="font-size:16px">—</div></div>
+</section>
+<div class="controls">
+<select class="search" id="period-filter" aria-label="فیلتر ماه" style="flex:0 1 220px">
+<option value="all">همه چک‌های پاس‌نشده</option>
+<option value="current">فقط ماه جاری</option>
+<option value="next">فقط ماه آینده</option>
+</select>
+<input class="search" id="search" type="search" placeholder="جست‌وجو در پروژه، گیرنده، وضعیت یا تاریخ..." aria-label="جست‌وجو">
+<span class="count" id="result-count"></span></div>
+<div class="legend"><span><i class="dot past"></i>سررسید گذشته</span><span><i class="dot current"></i>ماه جاری</span><span><i class="dot next"></i>ماه آینده</span></div>
+<section class="table-wrap"><table><thead><tr><th>بابت (پروژه)</th><th>گیرنده چک</th><th>وضعیت چک</th><th>تاریخ سررسید</th><th>مبلغ چک (تومان)</th></tr></thead><tbody id="table-body"></tbody></table></section>
+<section class="mobile-list" id="mobile-list"></section>
+<footer>این صفحه فقط اطلاعات ذخیره‌شده در زمان آخرین اجرای برنامه را نمایش می‌دهد.</footer>
+</main>
+<script>
+const DATA = __DATA_JSON__;
+const fa = value => String(value ?? "").replace(/[0-9]/g, d => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
+const money = value => {const n=Number(value);return Number.isFinite(n)?new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(n):(value||"—");};
+const esc = value => String(value ?? "").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const periodLabel = p => ({past:"سررسید گذشته",current:"ماه جاری",next:"ماه آینده",future:"سایر"})[p]||"—";
+function render(){
+ const query=document.getElementById("search").value.trim().toLocaleLowerCase("fa");
+ const selectedPeriod=document.getElementById("period-filter").value;
+ const rows=(DATA.rows||[]).filter(r=>
+   (selectedPeriod==="all" || r.period===selectedPeriod) &&
+   [r.project,r.recipient,r.status,r.dueDate].join(" ").toLocaleLowerCase("fa").includes(query)
+ );
+ document.getElementById("count").textContent=fa(rows.length);
+ document.getElementById("result-count").textContent=`نمایش ${fa(rows.length)} از ${fa((DATA.rows||[]).length)} مورد`;
+ document.getElementById("total").textContent=money(rows.reduce((sum,r)=>sum+(Number(r.amount)||0),0))+" تومان";
+ document.getElementById("updated").textContent=DATA.updatedAt||"—";
+ document.getElementById("table-body").innerHTML=rows.map(r=>`<tr class="${esc(r.period)}"><td>${esc(r.project)||"—"}</td><td>${esc(r.recipient)||"—"}</td><td><span class="status">${esc(r.status)||"—"}</span></td><td>${esc(r.dueDate)||"—"}</td><td class="amount">${money(r.amount)}</td></tr>`).join("");
+ if(!rows.length)document.getElementById("table-body").innerHTML='<tr><td colspan="5" class="empty">موردی پیدا نشد.</td></tr>';
+ document.getElementById("mobile-list").innerHTML=rows.length?rows.map(r=>`<article class="cheque-card ${esc(r.period)}"><div class="card-top"><div><div class="recipient">${esc(r.recipient)||"بدون نام"}</div><div class="project">${esc(r.project)||"بدون پروژه"}</div></div><div class="card-amount">${money(r.amount)}<div style="font-size:11px;font-weight:500;color:#697586">تومان</div></div></div><div class="card-details"><div class="detail"><div class="k">وضعیت چک</div><div class="v">${esc(r.status)||"—"}</div></div><div class="detail"><div class="k">تاریخ سررسید</div><div class="v">${esc(r.dueDate)||"—"}</div></div><div class="detail"><div class="k">وضعیت زمانی</div><div class="v">${periodLabel(r.period)}</div></div></div></article>`).join(""):'<div class="empty">موردی پیدا نشد.</div>';
+}
+document.getElementById("search").addEventListener("input",render);document.getElementById("period-filter").addEventListener("change",render);render();
+</script>
+</body>
+</html>
