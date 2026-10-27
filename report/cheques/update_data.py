@@ -90,12 +90,10 @@ def main():
             selected=[values[0],values[1],values[4],values[6],values[7]]
             if not any(v not in ("",None) for v in selected): continue
             project,recipient,status,due_date,amount=[clean(v) for v in selected]
-            # چک‌های پاس‌شده/وصول‌شده در داشبورد نمایش داده نمی‌شوند.
-            if is_passed(status):
-                continue
+            passed = is_passed(status)
             records.append({"project":project,"recipient":recipient,"status":status,
                             "dueDate":due_date,"amount":amount,"period":get_period(due_date,today),
-                            "_sortDate":sort_date_key(due_date)})
+                            "passed":passed,"_sortDate":sort_date_key(due_date)})
         # مرتب‌سازی بر اساس نزدیک‌ترین تاریخ سررسید؛ تاریخ‌های نامشخص در انتها.
         records.sort(key=lambda row: row["_sortDate"])
         for row in records:

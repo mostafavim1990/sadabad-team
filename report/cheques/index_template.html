@@ -4,13 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>وضعیت چک‌های صادر شده</title>
+<meta name="application-name" content="وضعیت چک ها">
+<meta name="apple-mobile-web-app-title" content="وضعیت چک ها">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1024">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>وضعیت چک ها</title>
 <style>
 :root{--bg:#f3f6fb;--panel:#fff;--ink:#182230;--muted:#697586;--line:#e2e8f0;--past:#e5e7eb;--past-border:#a8afb9;--current:#e0f5e7;--current-border:#45a56a;--next:#ffe5ee;--next-border:#dc7397;--shadow:0 8px 24px rgba(24,34,48,.06)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"B Nazanin",Tahoma,"Segoe UI",sans-serif;font-size:17px}
 main{max-width:1200px;margin:auto;padding:22px}
-.hero{background:linear-gradient(135deg,#173d75,#2e67b4);color:#fff;border-radius:22px;padding:24px 26px;box-shadow:var(--shadow)}
+.hero{background:linear-gradient(135deg,#126447,#24a66a);color:#fff;border-radius:22px;padding:24px 26px;box-shadow:var(--shadow)}
 .hero h1{margin:0 0 8px;font-size:clamp(24px,4vw,34px);font-weight:800}.hero p{margin:0;color:#e3ecff;font-size:15px}
 .summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
@@ -35,8 +45,11 @@ tbody tr.past td:first-child{border-right:4px solid var(--past-border)}tbody tr.
  .cheque-card.past{background:var(--past);border-color:var(--past-border)}.cheque-card.current{background:var(--current);border-color:var(--current-border)}.cheque-card.next{background:var(--next);border-color:var(--next-border)}
  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px 14px 9px}.recipient{font-weight:800;font-size:18px;overflow-wrap:anywhere}
  .project{color:#596579;font-size:13px;margin-top:3px}.card-amount{font-size:18px;font-weight:900;white-space:nowrap;text-align:left}
- .card-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 14px}.detail{background:#ffffffa6;border-radius:10px;padding:8px 10px;min-width:0}
- .detail .k{font-size:12px;color:#697586}.detail .v{font-size:14px;font-weight:700;overflow-wrap:anywhere;margin-top:2px}
+ .card-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:0 9px 10px}
+ .detail{background:#ffffffa6;border-radius:8px;padding:6px 5px;min-width:0;text-align:center}
+ .detail .k{font-size:10px;line-height:1.35;color:#697586;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .detail .v{font-size:12px;line-height:1.5;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+ @media(max-width:360px){.detail{padding:5px 3px}.detail .k{font-size:9px}.detail .v{font-size:11px}}
  .controls{margin:12px 0}.search{min-width:0;width:100%}
 }
 </style>
@@ -51,7 +64,8 @@ tbody tr.past td:first-child{border-right:4px solid var(--past-border)}tbody tr.
 </section>
 <div class="controls">
 <select class="search" id="period-filter" aria-label="فیلتر ماه" style="flex:0 1 220px">
-<option value="all">همه چک‌های پاس‌نشده</option>
+<option value="unpassed">همه چک‌های پاس‌نشده</option>
+<option value="all">همه چک‌ها (حتی پاس‌شده)</option>
 <option value="current">فقط ماه جاری</option>
 <option value="next">فقط ماه آینده</option>
 </select>
@@ -72,7 +86,7 @@ function render(){
  const query=document.getElementById("search").value.trim().toLocaleLowerCase("fa");
  const selectedPeriod=document.getElementById("period-filter").value;
  const rows=(DATA.rows||[]).filter(r=>
-   (selectedPeriod==="all" || r.period===selectedPeriod) &&
+   (selectedPeriod==="all" || (selectedPeriod==="unpassed" && r.passed!==true) || ((selectedPeriod==="current" || selectedPeriod==="next") && r.passed!==true && r.period===selectedPeriod)) &&
    [r.project,r.recipient,r.status,r.dueDate].join(" ").toLocaleLowerCase("fa").includes(query)
  );
  document.getElementById("count").textContent=fa(rows.length);
