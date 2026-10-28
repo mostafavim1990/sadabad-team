@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10243b">
-<title>داشبورد پروژه چیت سازی</title>
+<title>داشبورد پروژه</title>
 <style>
 @font-face{font-family:"BNazanin";src:local("B Nazanin"),local("BNazanin"),url("fonts/BNazanin.woff2") format("woff2"),url("fonts/BNazanin.ttf") format("truetype");font-display:swap}
 :root{--bg:#f3f6fb;--card:#fff;--ink:#17263c;--muted:#64748b;--line:#e3eaf2;--blue:#2563eb;--green:#159570;--orange:#f59e0b;--shadow:0 10px 28px #17365d0b}
@@ -29,6 +29,17 @@
 @keyframes shake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
 body.locked .wrap{display:none}
 @media(max-width:800px){.grid{grid-template-columns:1fr}.donut-area{grid-template-columns:1fr}.donut{width:180px;height:180px}.card{padding:14px}.metric{font-size:24px}}
+
+.metrics5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.metrics5 .metric{font-size:clamp(17px,1.9vw,25px)}.blue{color:var(--blue)}
+.mainTabs{display:flex;gap:8px;margin:0 0 16px}.mainTabs .tab{font-size:17px;padding:9px 20px;font-weight:bold}
+.bars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 28px}
+.bar-row{display:grid;grid-template-columns:130px 1fr auto;gap:10px;align-items:center}
+.bar-name{font-weight:bold;font-size:14px;overflow-wrap:anywhere}.bar-track{height:12px;background:#e8edf5;border-radius:8px;overflow:hidden;direction:rtl}
+.bar-fill{height:100%;background:linear-gradient(270deg,#159570,#2bb88f);border-radius:8px;min-width:0}.bar-row.zero .bar-name{color:var(--muted);font-weight:normal}
+.bar-val{font-size:12px;color:var(--muted);text-align:left;white-space:nowrap;direction:rtl}.bar-val b{color:var(--ink)}
+tr.sum td{font-weight:800;background:#eef4fc}tr.sum.key td{background:#fff6e0}.num{white-space:nowrap}
+.p-title{margin:0 0 4px;font-size:20px}
+@media(max-width:900px){.metrics5{grid-template-columns:repeat(2,minmax(0,1fr))}.bars{grid-template-columns:1fr}.bar-row{grid-template-columns:100px 1fr auto}}
 </style>
 </head>
 <body class="locked">
@@ -39,37 +50,55 @@ body.locked .wrap{display:none}
 <div class="gate-msg" id="gateMsg" role="alert"></div>
 <button class="btn" type="submit">ورود</button></form></div>
 <main class="wrap">
-<header class="top"><div><div class="eyebrow">گزارش مدیریتی</div><h1 id="projectTitle">داشبورد پروژه چیت سازی</h1><p class="sub">نمایش فقط‌خواندنی اطلاعات ذخیره‌شده اکسل</p></div><div><button class="btn secondary" id="reloadBtn">بارگذاری مجدد اطلاعات</button></div></header>
-<div id="status" class="status">در حال بارگذاری اطلاعات ذخیره‌شده…</div><div id="error" class="error hidden"></div>
-<section class="grid section" id="metrics"><div class="card"><div class="metric-label">کل هزینه پروژه</div><div class="metric" id="total">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه انجام‌شده</div><div class="metric green" id="spent">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه باقیمانده</div><div class="metric orange" id="remaining">—</div><div class="metric-label">تومان</div></div></section>
-<section class="card section"><div class="section-head"><h2>پیشرفت هزینه‌های پروژه</h2><span class="status" id="snapshotDate"></span></div><div class="donut-area"><div class="donut"><svg viewBox="0 0 120 120" aria-label="نمودار دوناتی پیشرفت هزینه"><circle cx="60" cy="60" r="46" fill="none" stroke="#e8edf5" stroke-width="15"/><circle id="spentArc" cx="60" cy="60" r="46" fill="none" stroke="#159570" stroke-width="15" stroke-linecap="butt" stroke-dasharray="0 289"/></svg><div class="donut-center"><strong id="percent">—</strong><span>هزینه انجام‌شده</span></div></div><div class="legend"><div class="legend-row"><span><i class="dot" style="background:#159570"></i>هزینه انجام‌شده</span><strong id="legendSpent">—</strong></div><div class="legend-row"><span><i class="dot" style="background:#e8edf5"></i>هزینه باقیمانده</span><strong id="legendRemaining">—</strong></div><p class="status">این نمودار از مقادیر ذخیره‌شده در فایل اکسل بازسازی شده است؛ ماکروها در مرورگر اجرا نمی‌شوند.</p></div></div></section>
-<section class="card section"><div class="section-head"><h2>جدول‌ها و شیت‌های اکسل</h2><span class="status" id="sheetSummary"></span></div><div class="tabs" id="tabs"></div><div class="table-tools"><input id="search" type="search" placeholder="جستجو در جدول فعلی…"><select id="pageSize"><option value="25">۲۵ ردیف</option><option value="50" selected>۵۰ ردیف</option><option value="100">۱۰۰ ردیف</option><option value="200">۲۰۰ ردیف</option></select></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div class="pagination"><span id="pageInfo"></span><div><button class="btn secondary" id="prev">قبلی</button> <button class="btn secondary" id="next">بعدی</button></div></div></section>
-<div class="footer">اطلاعات این صفحه از فایل data.json خوانده می‌شود؛ حذف فایل اکسل پس از تهیه نسخه ذخیره‌شده، اطلاعات سایت را حذف نمی‌کند.</div>
+<header class="top"><div><div class="eyebrow">گزارش مدیریتی</div><h1 id="projectTitle">داشبورد پروژه</h1><p class="sub">نمایش فقط‌خواندنی اطلاعات اکسل</p></div><div><button class="btn secondary" id="reloadBtn">بارگذاری مجدد اطلاعات</button></div></header>
+<div id="status" class="status"></div><div id="error" class="error hidden"></div>
+<nav class="mainTabs"><button class="tab active" data-v="dash">داشبورد</button><button class="tab" data-v="price">قیمت‌گذاری</button></nav>
+<div id="dash">
+<section class="metrics5 section"><div class="card"><div class="metric-label">کل هزینه پروژه</div><div class="metric" id="total">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه انجام‌شده</div><div class="metric green" id="spent">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه باقیمانده</div><div class="metric orange" id="remaining">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">متراژ کل</div><div class="metric blue" id="meters">—</div><div class="metric-label">متر مربع</div></div><div class="card"><div class="metric-label">قیمت ساخت هر متر مربع</div><div class="metric blue" id="cpm">—</div><div class="metric-label">تومان</div></div></section>
+<section class="card section"><div class="section-head"><h2>پیشرفت هزینه‌های پروژه</h2><span class="status" id="snapshotDate"></span></div><div class="donut-area"><div class="donut"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="46" fill="none" stroke="#e8edf5" stroke-width="15"/><circle id="spentArc" cx="60" cy="60" r="46" fill="none" stroke="#159570" stroke-width="15" stroke-dasharray="0 289"/></svg><div class="donut-center"><strong id="percent">—</strong><span>هزینه انجام‌شده</span></div></div><div class="legend"><div class="legend-row"><span><i class="dot" style="background:#159570"></i>هزینه انجام‌شده</span><strong id="legendSpent">—</strong></div><div class="legend-row"><span><i class="dot" style="background:#e8edf5"></i>هزینه باقیمانده</span><strong id="legendRemaining">—</strong></div></div></div></section>
+<section class="card section"><div class="section-head"><h2>سهم هر دسته از هزینه‌های انجام‌شده</h2><span class="status">مبلغ جمع و درصد نسبت به کل هزینه انجام‌شده</span></div><div class="bars" id="bars"></div></section>
+<section class="card section"><div class="section-head"><h2>ریز هزینه‌ها</h2><span class="status" id="rowCount"></span></div><div class="table-tools"><input id="search" type="search" placeholder="جستجو در جدول…"></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section>
+</div>
+<div id="price" class="hidden"><section class="card section"><div class="section-head"><div><h2 class="p-title" id="pTitle"></h2><span class="status" id="pSub"></span></div></div><div class="table-wrap"><table><thead id="pHead"></thead><tbody id="pBody"></tbody></table></div></section></div>
+<div class="footer">اطلاعات این صفحه از فایل data.json خوانده می‌شود.</div>
 </main>
 <script>
-const $=id=>document.getElementById(id);let snapshot=null,active=0,page=0;
-const fmt=n=>{if(typeof n!=='number'||!Number.isFinite(n))return '—';
-  const d=Math.abs(n)<1?4:2;
-  return new Intl.NumberFormat('fa-IR',{maximumFractionDigits:d}).format(n).replace(/[٬,]/g,'،');};
-const cell=v=>typeof v==='number'?fmt(v):safe(v);
-const safe=v=>v===null||v===undefined||v===''?'—':String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-async function loadData(){ $('reloadBtn').disabled=true;$('status').textContent='در حال خواندن نسخه ذخیره‌شده…';$('error').classList.add('hidden');try{const res=await fetch('./data.json?ts='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('فایل data.json پیدا نشد (HTTP '+res.status+').');snapshot=await res.json();renderAll();$('status').textContent='اطلاعات ذخیره‌شده با موفقیت بارگذاری شد.';}catch(e){$('error').textContent='خطا در بارگذاری: '+e.message+' — مطمئن شوید فایل data.json کنار index.html قرار دارد.';$('error').classList.remove('hidden');$('status').textContent='بارگذاری ناموفق بود.';}finally{$('reloadBtn').disabled=false;}}
-function renderAll(){const c=snapshot.chart||{};$('projectTitle').textContent=snapshot.project||'داشبورد پروژه';$('total').textContent=fmt(c.total);$('spent').textContent=fmt(c.spent);$('remaining').textContent=fmt(c.remaining);$('legendSpent').textContent=fmt(c.spent)+' تومان';$('legendRemaining').textContent=fmt(c.remaining)+' تومان';const p=Number(c.percent)||0;$('percent').textContent=fmt(p)+'٪';const circ=2*Math.PI*46;$('spentArc').setAttribute('stroke-dasharray',(circ*p/100)+' '+circ);$('snapshotDate').textContent='آخرین استخراج: '+(snapshot.generatedAt?new Date(snapshot.generatedAt).toLocaleString('fa-IR'):'نامشخص');$('sheetSummary').textContent=fmt((snapshot.sheets||[]).length)+' شیت';renderTabs();renderTable();}
-function renderTabs(){const sheets=snapshot?.sheets||[];$('tabs').innerHTML=sheets.map((s,i)=>`<button class="tab ${i===active?'active':''}" data-i="${i}">${safe(s.name)} <small>(${fmt(s.rowCount)})</small></button>`).join('');$('tabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{active=Number(b.dataset.i);page=0;$('search').value='';renderTabs();renderTable();}));}
-function renderTable(){const sh=snapshot?.sheets?.[active];if(!sh){$('thead').innerHTML='';$('tbody').innerHTML='<tr><td class="empty">داده‌ای وجود ندارد.</td></tr>';return;}const rows=sh.rows||[];const header=rows.find(r=>r.rowNumber===sh.headerRow);const headers=header?.cells||[];const data=rows.filter(r=>!header||r.rowNumber>header.rowNumber);const query=$('search').value.trim().toLocaleLowerCase('fa');const filtered=data.filter(r=>!query||r.cells.some(v=>String(v??'').toLocaleLowerCase('fa').includes(query)));const size=Number($('pageSize').value)||50;const pages=Math.max(1,Math.ceil(filtered.length/size));page=Math.min(page,pages-1);const shown=filtered.slice(page*size,(page+1)*size);$('thead').innerHTML='<tr><th>ردیف اکسل</th>'+headers.map((h,i)=>'<th>'+safe(h??('ستون '+(i+1)))+'</th>').join('')+'</tr>';$('tbody').innerHTML=shown.length?shown.map(r=>'<tr><td>'+fmt(r.rowNumber)+'</td>'+Array.from({length:Math.max(headers.length,r.cells.length)},(_,i)=>'<td>'+cell(r.cells[i])+'</td>').join('')+'</tr>').join(''):`<tr><td class="empty" colspan="${headers.length+1}">ردیفی برای نمایش پیدا نشد.</td></tr>`;$('pageInfo').textContent=filtered.length?`${fmt(page*size+1)} تا ${fmt(Math.min((page+1)*size,filtered.length))} از ${fmt(filtered.length)} ردیف`:'بدون نتیجه';$('prev').disabled=page===0;$('next').disabled=page>=pages-1;}
-$('reloadBtn').addEventListener('click',loadData);$('search').addEventListener('input',()=>{page=0;renderTable()});$('pageSize').addEventListener('change',()=>{page=0;renderTable()});$('prev').addEventListener('click',()=>{page=Math.max(0,page-1);renderTable()});$('next').addEventListener('click',()=>{page++;renderTable()});
+const $=id=>document.getElementById(id);let D=null;
+const PD=s=>String(s).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+const fmt=(n,d=2)=>typeof n!=='number'||!isFinite(n)?'—':new Intl.NumberFormat('fa-IR',{maximumFractionDigits:d}).format(n).replace(/[٬,]/g,'،');
+const esc=v=>v==null||v===''?'—':String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cell=v=>typeof v==='number'?`<td class="num">${fmt(v)}</td>`:`<td>${typeof v==='string'&&/^[\d\-\/ ]+$/.test(v)?PD(esc(v)):esc(v)}</td>`;
+async function loadData(){$('reloadBtn').disabled=true;$('error').classList.add('hidden');$('status').textContent='در حال بارگذاری…';
+ try{const r=await fetch('./data.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('data.json پیدا نشد ('+r.status+')');D=await r.json();render();$('status').textContent='';}
+ catch(e){$('error').textContent='خطا در بارگذاری: '+e.message;$('error').classList.remove('hidden');$('status').textContent='';}
+ finally{$('reloadBtn').disabled=false;}}
+function render(){const s=D.summary;$('projectTitle').textContent=D.project;document.title='داشبورد '+D.project;
+ $('total').textContent=fmt(s.total);$('spent').textContent=fmt(s.spent);$('remaining').textContent=fmt(s.remaining);$('meters').textContent=fmt(s.meters);$('cpm').textContent=fmt(Math.round(s.costPerMeter));
+ $('legendSpent').textContent=fmt(s.spent)+' تومان';$('legendRemaining').textContent=fmt(s.remaining)+' تومان';
+ const p=s.percent||0;$('percent').textContent=fmt(p,1)+'٪';const c=2*Math.PI*46;$('spentArc').setAttribute('stroke-dasharray',(c*p/100)+' '+c);
+ $('snapshotDate').textContent='آخرین استخراج: '+(D.generatedAt?new Date(D.generatedAt).toLocaleString('fa-IR'):'');
+ $('bars').innerHTML=D.categories.map(k=>`<div class="bar-row ${k.sum?'':'zero'}"><div class="bar-name">${esc(k.name)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,k.percent)}%"></div></div><div class="bar-val"><b>${fmt(k.sum,0)}</b> تومان · ${fmt(k.percent,1)}٪</div></div>`).join('');
+ const e=D.expenses;$('thead').innerHTML='<tr>'+e.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';renderRows();
+ const P=D.pricing;$('pTitle').textContent=P.title||'';$('pSub').textContent=[P.project,P.date&&PD(P.date)].filter(Boolean).join(' · ');
+ $('pHead').innerHTML='<tr>'+P.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
+ const body=P.rows.map(r=>'<tr>'+r.map(cell).join('')+'</tr>');
+ const sums=P.summary.map((x,i)=>{const [c,b,a]=x.values;return `<tr class="sum ${i>=2?'key':''}"><td></td><td>${esc(x.label)}</td>${[c,b,a].map(v=>v==null?'<td></td>':cell(v)).join('')}</tr>`});
+ $('pBody').innerHTML=body.concat(sums).join('');}
+function renderRows(){const q=$('search').value.trim(),rows=D.expenses.rows.filter(r=>!q||r.some(v=>String(v??'').includes(q)));
+ $('rowCount').textContent=fmt(rows.length)+' ردیف';
+ $('tbody').innerHTML=rows.map(r=>'<tr>'+r.map(cell).join('')+'</tr>').join('')+`<tr class="sum"><td colspan="3">جمع</td><td class="num">${fmt(rows.reduce((a,r)=>a+(typeof r[3]==='number'?r[3]:0),0))}</td></tr>`;}
+document.querySelectorAll('.mainTabs .tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mainTabs .tab').forEach(x=>x.classList.toggle('active',x===b));$('dash').classList.toggle('hidden',b.dataset.v!=='dash');$('price').classList.toggle('hidden',b.dataset.v!=='price');}));
+$('reloadBtn').addEventListener('click',loadData);$('search').addEventListener('input',renderRows);
 const HASHES=["d6eeee3753896a8e2f787e2aea7c98cb928c470e7cec9521611b554575897212","129109a2e615337868655325a36baf42c85215b67159e0209a588ef500fe37d3","35919aecb68ba703230812729ad27129912fa9b6d63e78897e45e2049b93b612"];
 async function sha256(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
 function unlock(){document.body.classList.remove('locked');$('gate').classList.add('hide');loadData();}
 $('gateEye').addEventListener('click',()=>{const i=$('gatePass');i.type=i.type==='password'?'text':'password';});
 $('gatePass').addEventListener('input',()=>{$('gateField').classList.remove('bad');$('gateMsg').textContent='';});
 $('gateForm').addEventListener('submit',async e=>{e.preventDefault();const v=$('gatePass').value.trim().toLowerCase();
-  if(!(window.crypto&&crypto.subtle)){$('gateMsg').textContent='مرورگر شما از بررسی امن رمز پشتیبانی نمی‌کند.';return;}
-  const h=await sha256(v);
-  if(HASHES.includes(h)){try{sessionStorage.setItem('dash_ok','1')}catch(_){}unlock();}
-  else{$('gateMsg').textContent='رمز ورود اشتباه است.';$('gateField').classList.add('bad');const b=$('gateForm');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('gatePass').select();}
-});
-let remembered=false;try{remembered=sessionStorage.getItem('dash_ok')==='1'}catch(_){}
-if(remembered)unlock();else setTimeout(()=>$('gatePass').focus(),100);
-
+ if(!(window.crypto&&crypto.subtle)){$('gateMsg').textContent='مرورگر شما از بررسی امن رمز پشتیبانی نمی‌کند.';return;}
+ const h=await sha256(v);
+ if(HASHES.includes(h)){try{sessionStorage.setItem('dash_ok','1')}catch(_){}unlock();}
+ else{$('gateMsg').textContent='رمز ورود اشتباه است.';$('gateField').classList.add('bad');const b=$('gateForm');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');$('gatePass').select();}});
+let ok=false;try{ok=sessionStorage.getItem('dash_ok')==='1'}catch(_){}
+if(ok)unlock();else setTimeout(()=>$('gatePass').focus(),100);
 </script></body></html>

@@ -1,221 +1,116 @@
 #!/usr/bin/env python3
 """
-استخراج اطلاعات از فایل اکسل پروژه و ساخت data.json برای داشبورد وب
+استخراج اطلاعات لازم از فایل اکسل پروژه و ساخت data.json برای داشبورد وب
+فقط دو شیت خوانده می‌شود: «شیت اول» و «آخرین شیت» (شیت‌های میانی نادیده گرفته می‌شوند)
 
-نحوه استفاده (در همان پوشه‌ای که اکسل و این اسکریپت هستند):
-    python extract_data.py
-    python extract_data.py Farhangian.xlsm
-    python extract_data.py Chitsazi.xlsm
-
-بعد از اجرا، data.json آپدیت می‌شود.
-سپس در صفحه وب دکمه «بارگذاری مجدد اطلاعات» را بزنید.
+استفاده:
+    python extract_data.py                 (اولین فایل xlsm/xlsx داخل همین پوشه)
+    python extract_data.py Besharati.xlsm
 """
-
-import sys
-import json
+import sys, json
 from pathlib import Path
 from datetime import datetime, date, timezone
 
 try:
     import openpyxl
 except ImportError:
-    print("خطا: کتابخانه openpyxl نصب نیست.")
-    print("نصب کنید با:  pip install openpyxl")
-    sys.exit(1)
+    print("نصب کنید:  pip install openpyxl"); sys.exit(1)
 
+def norm(s):
+    return str(s or "").replace("ي", "ی").replace("ك", "ک").replace("\u200c", "").replace(" ", "").strip()
 
-def cell_value(v):
-    if v is None:
-        return None
-    if isinstance(v, datetime):
-        return v.strftime("%Y-%m-%d")
-    if isinstance(v, date):
-        return v.isoformat()
-    if isinstance(v, float) and v.is_integer():
-        return int(v)
+def val(v):
+    if v is None: return None
+    if isinstance(v, (datetime, date)): return v.strftime("%Y-%m-%d")
+    if isinstance(v, float) and v.is_integer(): return int(v)
+    if isinstance(v, str): return v.strip() or None
     return v
 
+def num(v):
+    return v if isinstance(v, (int, float)) else 0
 
-def extract_sheet(ws):
-    max_r = 0
-    max_c = 0
-    scan_rows = min(ws.max_row or 1, 800)
-    scan_cols = min(ws.max_column or 1, 40)
+# نام گزینه‌های منوی کشویی شیت اول که با نام آیتم‌های شیت آخر فرق دارند
+ALIASES = {"آرماتور": "آرماتوربندی", "لوله کشی": "لوله کشی آب و فاضلاب", "پنجره": "پنجره UPVC",
+           "در": "در داخلی", "کاشی سرامیک": "کاشی و سرامیک", "سنگکار": "سنگ کار",
+           "گچکار": "گچ کار", "نزول": "وجه الالتزام"}
 
-    for row in ws.iter_rows(min_row=1, max_row=scan_rows, max_col=scan_cols):
-        for cell in row:
-            if cell.value is not None:
-                max_r = max(max_r, cell.row)
-                max_c = max(max_c, cell.column)
-
-    if max_r == 0:
-        return {
-            "name": ws.title,
-            "title": ws.title,
-            "headerRow": None,
-            "rows": [],
-            "rowCount": 0,
-        }
-
-    header_row = None
-    for r in range(1, min(25, max_r + 1)):
-        for c in range(1, min(12, max_c + 1)):
-            v = ws.cell(r, c).value
-            if v and "ردیف" in str(v):
-                header_row = r
-                break
-        if header_row:
-            break
-
-    title = ws.title
-    for coord in ("D1", "A1", "B1", "C1", "A2"):
-        v = ws[coord].value
-        if v and str(v).strip():
-            title = str(v).strip()
-            break
-
-    rows = []
-    for r in range(1, max_r + 1):
-        cells = []
-        has_content = False
-        for c in range(1, max_c + 1):
-            val = cell_value(ws.cell(r, c).value)
-            cells.append(val)
-            if val is not None and val != "":
-                has_content = True
-        if has_content:
-            while cells and cells[-1] is None:
-                cells.pop()
-            rows.append({"rowNumber": r, "cells": cells})
-
-    return {
-        "name": ws.title,
-        "title": title,
-        "headerRow": header_row,
-        "rows": rows,
-        "rowCount": len(rows),
-    }
-
-
-def extract_chart(wb):
-    """پیدا کردن جمع کل، تخمین هزینه و باقیمانده از روی برچسب سلول‌ها."""
-    spent = remaining = total = None
-
-    def consider(label, value):
-        nonlocal spent, remaining, total
-        if not isinstance(label, str) or not isinstance(value, (int, float)):
-            return
-        text = label.replace("ي", "ی").replace("ك", "ک").strip()
-        if text in ("جمع کل", "جمع هزینه های انجام شده") and spent is None:
-            spent = value
-        elif (
-            text.startswith("تخمین هزینه") or text.startswith("هزینه تخمین")
-        ) and "آپدیت" not in text and "به روز" not in text and total is None:
-            total = value
-        elif (
-            text.startswith("هزینه باقی") or text.startswith("مانده هزینه")
-        ) and remaining is None:
-            remaining = value
-
-    if "Sheet1" in wb.sheetnames:
-        ws = wb["Sheet1"]
-        for r in range(1, min(ws.max_row or 1, 40) + 1):
-            for c in range(1, min(ws.max_column or 1, 20)):
-                consider(ws.cell(r, c).value, ws.cell(r, c + 1).value)
-
-    if (spent is None or total is None) and any(name.startswith("Sheet") for name in wb.sheetnames):
-        for name in wb.sheetnames:
-            ws = wb[name]
-            for r in range(1, min(ws.max_row or 1, 120) + 1):
-                label = ws.cell(r, 4).value
-                if isinstance(label, str) and "جمع کل" in label:
-                    if spent is None:
-                        spent = ws.cell(r, 1).value
-                    if total is None:
-                        total = ws.cell(r, 2).value
-                    break
-
-    spent = float(spent or 0)
-    total = float(total or 0)
-    remaining = float(remaining if remaining is not None else (total - spent if total else 0))
-    percent = (spent / total * 100) if total else 0
-    return {
-        "spent": spent,
-        "remaining": remaining,
-        "total": total,
-        "percent": percent,
-    }
-
-
-def detect_project_name(wb, source_file: str) -> str:
-    if "Sheet1" in wb.sheetnames:
-        v = wb["Sheet1"]["D1"].value
-        if v:
-            name = str(v).strip()
-            for prefix in ("پروژه خیابان رجایی - ", "پروژه "):
-                if name.startswith(prefix):
-                    name = name[len(prefix):].strip()
-            if name:
-                return name if name.startswith("پروژه") else f"پروژه {name}"
-
-    stem = Path(source_file).stem
-    mapping = {
-        "Farhangian": "پروژه فرهنگیان",
-        "Chitsazi": "پروژه چیت‌سازی",
-        "chitsazi": "پروژه چیت‌سازی",
-    }
-    return mapping.get(stem, f"پروژه {stem}")
-
+def find_labeled(ws, label, label_col=10, value_col=11, max_row=60):
+    for r in range(1, max_row + 1):
+        if norm(ws.cell(r, label_col).value) == norm(label):
+            return ws.cell(r, value_col).value
+    return None
 
 def main():
-    script_dir = Path(__file__).resolve().parent
-
+    here = Path(__file__).resolve().parent
     if len(sys.argv) > 1:
-        excel_path = Path(sys.argv[1])
-        if not excel_path.is_absolute():
-            excel_path = script_dir / excel_path
+        path = Path(sys.argv[1]);  path = path if path.is_absolute() else here / path
     else:
-        candidates = [
-            script_dir / "Farhangian.xlsm",
-            script_dir / "Chitsazi.xlsm",
-            script_dir / "farhangian.xlsm",
-            script_dir / "chitsazi.xlsm",
-        ]
-        excel_path = next((p for p in candidates if p.exists()), None)
-        if not excel_path:
-            print("فایل اکسل پیدا نشد.")
-            print("استفاده:  python extract_data.py نام‌فایل.xlsm")
-            sys.exit(1)
+        found = sorted(list(here.glob("*.xlsm")) + list(here.glob("*.xlsx")))
+        found = [p for p in found if not p.name.startswith("~$")]
+        if not found: print("فایل اکسل پیدا نشد."); sys.exit(1)
+        path = found[0]
+    print("در حال خواندن:", path.name)
+    wb = openpyxl.load_workbook(path, data_only=True)
+    first, last = wb.worksheets[0], wb.worksheets[-1]
 
-    if not excel_path.exists():
-        print(f"فایل پیدا نشد: {excel_path}")
-        sys.exit(1)
+    # ---------- شیت اول: ردیف‌های هزینه (ستون B, C, F, H)
+    hdr = next((r for r in range(1, 25) if "ردیف" in str(first.cell(r, 1).value or "")), 2)
+    headers = [val(first.cell(hdr, c).value) for c in (2, 3, 6, 8)]
+    rows, by_cat = [], {}
+    for r in range(hdr + 1, (first.max_row or hdr) + 1):
+        b, c, f, h = (val(first.cell(r, k).value) for k in (2, 3, 6, 8))
+        if isinstance(first.cell(r, 1).value, (int, float)) and (b or c):
+            rows.append([b, c, f if f != "-" else None, h])
+            if b: by_cat[norm(b)] = by_cat.get(norm(b), 0) + num(h)
 
-    print(f"در حال خواندن: {excel_path.name} ...")
-    wb = openpyxl.load_workbook(excel_path, data_only=True)
+    spent = num(find_labeled(first, "جمع کل")) or sum(num(x[3]) for x in rows)
+    total = num(find_labeled(first, "هزینه تخمین کل"))
+    remaining = find_labeled(first, "مانده هزینه")
+    remaining = num(remaining) if remaining is not None else total - spent
+    meters = num(find_labeled(first, "متراژ کل"))
+    per_m = num(find_labeled(first, "هزینه ساخت به ازای هر متر مربع"))
+
+    # ---------- شیت آخر: آیتم‌ها E3:E63
+    title_date, title_text, title_proj = (val(last.cell(1, c).value) for c in (3, 4, 5))
+    ph = [val(last.cell(2, c).value) for c in (5, 4, 3, 2, 1)]   # چینش معکوس: E D C B A
+    items, summary, cats, used = [], [], [], set()
+    for r in range(3, last.max_row + 1):
+        e, d = val(last.cell(r, 5).value), val(last.cell(r, 4).value)
+        a, b, c = (last.cell(r, k).value for k in (1, 2, 3))
+        if r <= 63 and e:
+            items.append([e, d, val(c), val(b), val(a)])
+            key = norm(e); used.add(key)
+            s = by_cat.get(key)
+            if s is None:  # از نام مستعار منوی کشویی
+                s = sum(v for k, v in by_cat.items() if norm(ALIASES.get(k, "")) == key or ALIASES.get(k) == e)
+                for k in by_cat:
+                    if norm(ALIASES.get(k, k)) == key: used.add(k)
+            else: used.add(key)
+            cats.append({"name": e, "sum": s})
+        elif r > 63 and d:
+            summary.append({"label": d, "values": [val(c), val(b), val(a)]})   # C, B, A
+    # دسته‌هایی که در شیت اول هست ولی در لیست آیتم‌ها نیست (برای صحیح بودن جمع‌ها)
+    for k, v in by_cat.items():
+        if k not in used and not any(norm(ALIASES.get(k, "")) == norm(c["name"]) for c in cats):
+            cats.append({"name": k, "sum": v})
+    for c in cats: c["percent"] = (c["sum"] / spent * 100) if spent else 0
 
     data = {
-        "project": detect_project_name(wb, excel_path.name),
-        "sourceFile": excel_path.name,
+        "project": val(first["D1"].value) or title_proj or path.stem,
+        "sourceFile": path.name,
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
-        "chart": extract_chart(wb),
-        "sheets": [extract_sheet(wb[name]) for name in wb.sheetnames],
+        "summary": {"total": total, "spent": spent, "remaining": remaining,
+                    "percent": (spent / total * 100) if total else 0,
+                    "meters": meters, "costPerMeter": per_m},
+        "categories": cats,
+        "expenses": {"header": headers, "rows": rows},
+        "pricing": {"date": title_date, "title": title_text, "project": title_proj,
+                    "header": ph, "rows": items, "summary": summary},
     }
-
-    out_path = script_dir / "data.json"
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False)
-
-    chart = data["chart"]
-    print("data.json ساخته شد.")
-    print(f"  پروژه     : {data['project']}")
-    print(f"  هزینه کل  : {chart['total']:,.0f}")
-    print(f"  انجام‌شده : {chart['spent']:,.0f}")
-    print(f"  باقیمانده : {chart['remaining']:,.0f}")
-    print(f"  درصد      : {chart['percent']:.1f}%")
-    print()
-    print("حالا صفحه وب را باز کنید و دکمه «بارگذاری مجدد اطلاعات» را بزنید.")
-
+    with open(here / "data.json", "w", encoding="utf-8") as fh:
+        json.dump(data, fh, ensure_ascii=False)
+    print(f"data.json ساخته شد: {len(rows)} ردیف هزینه، {len(items)} آیتم تخمین، {len(cats)} دسته")
+    print(f"  هزینه کل {total:,.0f} | انجام‌شده {spent:,.0f} | باقیمانده {remaining:,.0f}")
 
 if __name__ == "__main__":
     main()
