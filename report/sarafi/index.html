@@ -38,10 +38,13 @@ input:focus,select:focus{border-color:var(--g)}
 .sum span{color:var(--mut);font-size:12px}.sum b{font-size:16px;color:var(--gd)}
 .tw{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px #0a2a2212}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:#e9f1ef;color:#42565b;font-weight:700;text-align:right;padding:7px 6px;font-size:11.5px}
-td{padding:7px 6px;border-top:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+th{background:#e9f1ef;color:#42565b;font-weight:700;text-align:right;padding:8px 6px;font-size:11.5px}
+.tw table{border-collapse:separate;border-spacing:0 6px;padding:0 5px}
+.tw tbody tr td{padding:10px 7px;vertical-align:middle;overflow-wrap:anywhere;border-top:1px solid #0000000b;border-bottom:1px solid #0000000b}
+.tw tbody tr td:first-child{border-radius:0 10px 10px 0;border-right:1px solid #0000000b}
+.tw tbody tr td:last-child{border-radius:10px 0 0 10px;border-left:1px solid #0000000b;white-space:nowrap}
 td.n{white-space:nowrap;font-weight:700}
-tr.cur td{background:var(--cur)}tr.nxt td{background:var(--nxt)}
+tr.cur td{background:var(--cur)}tr.nxt td{background:var(--nxt)}tr.past td{background:#e5e7eb;color:#687078} .tw tbody tr:not(.cur):not(.nxt):not(.past) td{background:#fff}
 .empty{padding:22px;text-align:center;color:var(--mut)}
 #gate{position:fixed;inset:0;z-index:9;background:#0b2f27bb;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px}
 #gate.hide{display:none}
@@ -69,12 +72,12 @@ tr.cur td{background:var(--cur)}tr.nxt td{background:var(--nxt)}
 </tbody></table></div>
 
 <div class="ctrl"><input id="q" type="search" placeholder="جستجو…" enterkeyhint="search"><select id="mode"><option value="due">سررسید نشده</option><option value="cur" selected>ماه جاری</option><option value="next">ماه آینده</option><option value="all">کل چک‌ها</option></select></div>
-<div class="legend"><span><i style="background:var(--cur)"></i>سبز: ماه جاری</span><span><i style="background:var(--nxt)"></i>صورتی: یک ماه آینده</span></div>
+<div class="legend"><span><i style="background:var(--cur)"></i>سبز: ماه جاری</span><span><i style="background:var(--nxt)"></i>صورتی: ماه آینده</span><span><i style="background:#e5e7eb"></i>خاکستری: تاریخ گذشته</span></div>
 <div class="card sum"><span id="cnt">جمع مبلغ چک‌ها</span><b id="sum">—</b></div>
-<div class="tw"><table><thead><tr><th>صاحب چک</th><th>مبلغ چک</th><th>خریده شده از</th><th>وضعیت</th></tr></thead><tbody id="tb"></tbody></table><div id="empty" class="empty" hidden>چکی برای نمایش وجود ندارد</div></div>
+<div class="tw"><table><thead><tr><th>صاحب چک</th><th>مبلغ چک</th><th>خریده شده از</th><th>تاریخ چک</th></tr></thead><tbody id="tb"></tbody></table><div id="empty" class="empty" hidden>چکی برای نمایش وجود ندارد</div></div>
 </div></div>
 <script>
-/*DATA_START*/window.DATA={"source": "arz.xlsm", "updatedAt": "2026-10-29T18:58:54Z", "buyingPower": 1375025133, "totalBuy": 1552050000, "totalPaid": 1047500000, "netProfit": 479550000, "checks": [{"owner": "فاضل بهرامی گرجی", "amount": 82000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "خرج شده", "due": "1405/08/15"}, {"owner": "حسین علیپور گرجی", "amount": 14700000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/07/16"}, {"owner": "غلامعلی قاسمپور", "amount": 40000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/07/15"}, {"owner": "مسعود عموزاد مهدیرجی", "amount": 32000000, "from": "حامد گرجی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/07/10"}, {"owner": "مصطفی کاظمی گرجی", "amount": 45000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "خرج شده", "due": "1405/08/10"}, {"owner": "محسن رمضانپور", "amount": 27000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/08/10"}, {"owner": "غلامرضا نصیری گرجی", "amount": 88000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "خرج شده", "due": "1405/08/10"}, {"owner": "شهرام مریخ", "amount": 36000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/05"}, {"owner": "غلامرضا نصیری گرجی", "amount": 88000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/10/10"}, {"owner": "ایمان افضلی", "amount": 118000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/10/10"}, {"owner": "ابوطالب زیبنده گرجی", "amount": 239000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/11/11"}, {"owner": "ایمان افضلی", "amount": 68000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/11/12"}, {"owner": "حسن میلادی گرجی", "amount": 40000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/11/10"}, {"owner": "داود لطفیان سورکی", "amount": 50000000, "from": "حامد گرجی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/09/20"}, {"owner": "مهدی تقی پور گرجی", "amount": 150000000, "from": "حامد گرجی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/20"}, {"owner": "خرید تنبک توت", "amount": 40000000, "from": "محمدرضا فتی", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/10/01"}, {"owner": "قرض به پروژه سعدآباد", "amount": 140400000, "from": "گروه سعد آباد", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/08/07"}, {"owner": "مرتضی گردان", "amount": 25000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/12"}, {"owner": "مرتضی گردان", "amount": 25000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/10/27"}, {"owner": "زهرا بیاتی تروجنی", "amount": 35000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/23"}, {"owner": "محمد رضا ضابط", "amount": 108000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/04"}, {"owner": "رضا عبادی گلچالسری", "amount": 13500000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/08/30"}, {"owner": "حمیدرضا میلادی گرجی", "amount": 7000000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/09/01"}, {"owner": "محمدرضا قاسمپور", "amount": 17900000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/05"}, {"owner": "مهدی فتحی زینی", "amount": 7900000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/05"}, {"owner": "احمد کاظمی حسین آبادی", "amount": 6650000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/05"}, {"owner": "وحید جعفری گرجی", "amount": 8000000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/10"}]};/*DATA_END*/
+/*DATA_START*/window.DATA={"source": "arz.xlsm", "updatedAt": "2026-10-29T19:24:26Z", "buyingPower": 1375025133, "totalBuy": 1552050000, "totalPaid": 1047500000, "netProfit": 479550000, "checks": [{"owner": "فاضل بهرامی گرجی", "amount": 82000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "خرج شده", "due": "1405/08/15"}, {"owner": "حسین علیپور گرجی", "amount": 14700000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/07/16"}, {"owner": "غلامعلی قاسمپور", "amount": 40000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/07/15"}, {"owner": "مسعود عموزاد مهدیرجی", "amount": 32000000, "from": "حامد گرجی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/07/10"}, {"owner": "مصطفی کاظمی گرجی", "amount": 45000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "خرج شده", "due": "1405/08/10"}, {"owner": "محسن رمضانپور", "amount": 27000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/08/10"}, {"owner": "غلامرضا نصیری گرجی", "amount": 88000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "خرج شده", "due": "1405/08/10"}, {"owner": "شهرام مریخ", "amount": 36000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/05"}, {"owner": "غلامرضا نصیری گرجی", "amount": 88000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/10/10"}, {"owner": "ایمان افضلی", "amount": 118000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/10/10"}, {"owner": "ابوطالب زیبنده گرجی", "amount": 239000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/11/11"}, {"owner": "ایمان افضلی", "amount": 68000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/11/12"}, {"owner": "حسن میلادی گرجی", "amount": 40000000, "from": "حامد گرجی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/11/10"}, {"owner": "داود لطفیان سورکی", "amount": 50000000, "from": "حامد گرجی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/09/20"}, {"owner": "مهدی تقی پور گرجی", "amount": 150000000, "from": "حامد گرجی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/20"}, {"owner": "خرید تنبک توت", "amount": 40000000, "from": "محمدرضا فتی", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/10/01"}, {"owner": "قرض به پروژه سعدآباد", "amount": 140400000, "from": "گروه سعد آباد", "status": "ثبت شده - پرداخت شده", "state": "پاس شده", "due": "1405/08/07"}, {"owner": "مرتضی گردان", "amount": 25000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/12"}, {"owner": "مرتضی گردان", "amount": 25000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/10/27"}, {"owner": "زهرا بیاتی تروجنی", "amount": 35000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/23"}, {"owner": "محمد رضا ضابط", "amount": 108000000, "from": "امیر حسین میلادی - گوشی", "status": "ثبت شده - پرداخت شده", "state": "سررسید نشده", "due": "1405/09/04"}, {"owner": "رضا عبادی گلچالسری", "amount": 13500000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/08/30"}, {"owner": "حمیدرضا میلادی گرجی", "amount": 7000000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/09/01"}, {"owner": "محمدرضا قاسمپور", "amount": 17900000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/05"}, {"owner": "مهدی فتحی زینی", "amount": 7900000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/05"}, {"owner": "احمد کاظمی حسین آبادی", "amount": 6650000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/05"}, {"owner": "وحید جعفری گرجی", "amount": 8000000, "from": "علی مصطفوی", "status": "ثبت نشده", "state": "سررسید نشده", "due": "1405/10/10"}]};/*DATA_END*/
 const $=i=>document.getElementById(i),HASH="36b9a348ff8fdd5fb3ac60af9a10e83e21bd30460ca209530964b0e006aa5ee9";
 const MN=["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
 const PD=s=>String(s).replace(/[0-9]/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]),LD=s=>String(s).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));
@@ -91,12 +94,33 @@ let[a,bb,c,d,e,f,g,h]=H;for(let i=0;i<64;i++){const t1=(h+(rr(e,6)^rr(e,11)^rr(e
 [a,bb,c,d,e,f,g,h].forEach((v,i)=>H[i]=(H[i]+v)|0)}
 return H.map(v=>(v>>>0).toString(16).padStart(8,"0")).join("")}
 const T=new Date(),J=toJ(T.getFullYear(),T.getMonth()+1,T.getDate()),CUR=J[0]*12+J[1],NXT=CUR+1;
-function render(){const D=window.DATA,mode=$("mode").value,q=LD($("q").value).trim();
-const rows=D.checks.filter(c=>{const k=key(c.due);
- if(mode==="due"&&c.state!=="سررسید نشده")return false;if(mode==="cur"&&k!==CUR)return false;if(mode==="next"&&k!==NXT)return false;
- return !q||[c.owner,c.amount,c.from,c.status].some(v=>LD(v).includes(q))||PD(c.amount).includes(q)});
-$("tb").innerHTML=rows.map(c=>{const k=key(c.due);return`<tr class="${k===CUR?"cur":k===NXT?"nxt":""}"><td>${esc(c.owner)}</td><td class="n">${fmt(c.amount)}</td><td>${esc(c.from)}</td><td>${esc(c.status)}</td></tr>`}).join("");
-$("empty").hidden=rows.length>0;$("sum").textContent=fmt(rows.reduce((s,c)=>s+c.amount,0))+" تومان";$("cnt").textContent="جمع مبلغ چک‌ها ("+PD(rows.length)+" چک)"}
+function dateKey(s){
+ const m=LD(s||"").match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+ return m ? (+m[1])*10000+(+m[2])*100+(+m[3]) : 99999999;
+}
+function isPending(c){
+ const txt=String((c.state||"")+" "+(c.status||"")).replace(/\s+/g," ");
+ return !/(باطل|خرج شده|پاس شده|برگشت خورده|برگشت‌شده|وصول شده)/.test(txt);
+}
+function render(){
+ const D=window.DATA,mode=$("mode").value,q=LD($("q").value).trim();
+ const rows=D.checks.filter(c=>{
+  const k=key(c.due);
+  if(mode!=="all"&&!isPending(c))return false;
+  if(mode==="due"&&!isPending(c))return false;
+  if(mode==="cur"&&k!==CUR)return false;
+  if(mode==="next"&&k!==NXT)return false;
+  return !q||[c.owner,c.amount,c.from,c.due].some(v=>LD(v).includes(q))||PD(c.amount).includes(q);
+ }).sort((a,b)=>dateKey(a.due)-dateKey(b.due));
+ $("tb").innerHTML=rows.map(c=>{
+  const k=key(c.due),dk=dateKey(c.due),todayKey=J[0]*10000+J[1]*100+J[2];
+  const cls=k===CUR?"cur":k===NXT?"nxt":dk<todayKey?"past":"";
+  return`<tr class="${cls}"><td>${esc(c.owner)}</td><td class="n">${fmt(c.amount)}</td><td>${esc(c.from)}</td><td class="n">${esc(c.due)}</td></tr>`;
+ }).join("");
+ $("empty").hidden=rows.length>0;
+ $("sum").textContent=fmt(rows.reduce((s,c)=>s+c.amount,0))+" تومان";
+ $("cnt").textContent="جمع مبلغ چک‌ها ("+PD(rows.length)+" چک)";
+}
 function init(){const D=window.DATA;$("power").textContent=fmt(D.buyingPower||0);
   $("totalBuy").textContent=fmt(D.totalBuy??0)+" تومان";
   $("totalPaid").textContent=fmt(D.totalPaid??0)+" تومان";
