@@ -54,9 +54,8 @@ def main():
             continue
         checks.append({
             "owner": text(a), "amount": num(b), "from": text(c), "status": text(d),
-             "state": text(ws.cell(r, 6).value),   # وضعیت چک (برای فیلتر سررسید نشده)
-            "due": text(ws.cell(r, 8).value),     # تاریخ سررسید
-            "colH": text(ws.cell(r, 8).value),    # مقدار ستون H برای نمایش در جدول
+            "state": text(ws.cell(r, 6).value),   # وضعیت چک (سررسید نشده / پاس شده / خرج شده)
+            "due": text(ws.cell(r, 8).value),     # تاریخ سررسید (فقط برای رنگ‌بندی و فیلتر ماه)
         })
 
     # توان خرید: خانه‌ی کنار برچسب «مانده / توان خرید»
@@ -68,13 +67,33 @@ def main():
                 break
         if power: break
 
+    # خلاصه مالی: در فایل فعلی، عنوان‌ها در ستون M و مقدارها در ستون N هستند.
+    summary = {"totalBuy": 0, "totalPaid": 0, "netProfit": 0}
+    labels = {
+        "جمعخرید": "totalBuy",
+        "جمعپرداختی": "totalPaid",
+        "سود(خالص)": "netProfit",
+        "سودخالص": "netProfit",
+    }
+    for row in ws.iter_rows(min_row=1, max_row=min(ws.max_row or 60, 60), min_col=1, max_col=30):
+        for cell in row:
+            key = labels.get(norm(cell.value))
+            if key:
+                value = ws.cell(cell.row, cell.column + 1).value
+                summary[key] = num(value)
+    # اگر سلول‌های خلاصه در ستون‌های استاندارد باشند، مستقیماً M/N را هم بررسی کن.
+    for r in range(1, 10):
+        key = labels.get(norm(ws.cell(r, 13).value))
+        if key:
+            summary[key] = num(ws.cell(r, 14).value)
+
     # تاریخ به‌روزرسانی: زمان آخرین ذخیره‌ی فایل اکسل
     mod = wb.properties.modified
     if mod is None:
         mod = datetime.fromtimestamp(os.path.getmtime(path))
     updated = mod.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") if mod.tzinfo is None else mod.isoformat()
 
-    data = {"source": path.name, "updatedAt": updated, "buyingPower": power, "checks": checks}
+    data = {"source": path.name, "updatedAt": updated, "buyingPower": power, **summary, "checks": checks}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     html = page.read_text(encoding="utf-8")
     i, j = html.find(START), html.find(END)
