@@ -131,9 +131,8 @@ function unlock(){document.body.classList.remove("locked");$("gate").classList.a
 $("q").addEventListener("input",render);$("mode").addEventListener("change",render);
 $("gp").addEventListener("input",()=>{$("msg").textContent="";$("gf").classList.remove("bad")});
 $("gf").addEventListener("submit",e=>{e.preventDefault();const v=LD($("gp").value).trim();
- if(sha256(v)===HASH){try{sessionStorage.setItem("sarrafi_ok","1")}catch(_){}unlock()}
+ if(sha256(v)===HASH){unlock()}
  else{$("msg").textContent="رمز ورود صحیح نمی‌باشد";const g=$("gf");g.classList.add("bad");g.classList.remove("shake");void g.offsetWidth;g.classList.add("shake");$("gp").select()}});
-let ok=false;try{ok=sessionStorage.getItem("sarrafi_ok")==="1"}catch(_){}
-if(ok)unlock();else setTimeout(()=>$("gp").focus(),150);
+setTimeout(()=>$("gp").focus(),150);
 </script>
 </body></html>
