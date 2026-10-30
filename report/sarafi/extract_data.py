@@ -68,12 +68,13 @@ def main():
         if power: break
 
     # خلاصه مالی: در فایل فعلی، عنوان‌ها در ستون M و مقدارها در ستون N هستند.
-    summary = {"totalBuy": 0, "totalPaid": 0, "netProfit": 0}
+    summary = {"totalBuy": 0, "totalPaid": 0, "netProfit": 0, "marketCapital": 0}
     labels = {
         "جمعخرید": "totalBuy",
         "جمعپرداختی": "totalPaid",
         "سود(خالص)": "netProfit",
         "سودخالص": "netProfit",
+        "سرمایهدربازار": "marketCapital",   # سرمایه در بازار
     }
     for row in ws.iter_rows(min_row=1, max_row=min(ws.max_row or 60, 60), min_col=1, max_col=30):
         for cell in row:
