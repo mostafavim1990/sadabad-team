@@ -449,7 +449,7 @@ body.site-in .hero-content > *:nth-child(4) { animation-delay: .6s; }
     radial-gradient(circle at 100% 0%, rgba(123, 160, 91, .06), transparent 40%),
     #fff;
 }
-.testi-slider { max-width: 680px; margin: 0 auto; position: relative; touch-action: pan-y; }
+.testi-slider { max-width: 680px; margin: 0 auto; position: relative; touch-action: pan-y; overflow: hidden; }
 .testi-track { display: flex; transition: transform .6s cubic-bezier(.65, 0, .35, 1); }
 .testi-card {
   flex: 0 0 100%;
