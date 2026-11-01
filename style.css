@@ -201,12 +201,10 @@ body.site-in .hero-content > *:nth-child(4) { animation-delay: .6s; }
   margin: -6px auto 26px;
   width: clamp(220px, 30vw, 340px);
   height: auto;
-  border-radius: 28px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
   animation: logoGlow 2.2s ease-in-out infinite;
 }
 @media (max-width: 560px) {
-  .hero-logo { width: 200px; border-radius: 20px; }
+  .hero-logo { width: 200px; }
 }
 
 .slogan-mark { color: var(--tan); font-weight: 800; white-space: nowrap; }
