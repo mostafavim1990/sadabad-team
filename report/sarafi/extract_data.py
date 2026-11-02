@@ -56,6 +56,12 @@ def main():
             "owner": text(a), "amount": num(b), "from": text(c), "status": text(d),
             "state": text(ws.cell(r, 6).value),   # وضعیت چک (سررسید نشده / پاس شده / خرج شده)
             "due": text(ws.cell(r, 8).value),     # تاریخ سررسید (فقط برای رنگ‌بندی و فیلتر ماه)
+            # جزئیات نمایش‌داده‌شده در پنجره‌ی هر چک
+            "receiver": text(ws.cell(r, 5).value),   # E: انتقال گیرنده
+            "buyAmount": num(ws.cell(r, 7).value),   # G: مبلغ خرید
+            "profit": num(ws.cell(r, 9).value),      # I: سود خرید
+            "percent": num(ws.cell(r, 10).value),    # J: درصد (به‌صورت کسر، مثلاً 0.07)
+            "note": text(ws.cell(r, 12).value),      # L: توضیحات چک
         })
 
     # توان خرید: خانه‌ی کنار برچسب «مانده / توان خرید»
