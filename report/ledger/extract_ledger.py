@@ -139,10 +139,16 @@ def main():
     print(f"در حال خواندن: {excel_path.name} ...")
     wb = openpyxl.load_workbook(excel_path, data_only=True)
     chart = partner_claims(wb)
+    modified = wb.properties.modified
+    if isinstance(modified, datetime):
+        source_modified = modified.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+    else:
+        source_modified = datetime.fromtimestamp(excel_path.stat().st_mtime, timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
     data = {
         "project": "حسابداری شرکا",
         "sourceFile": excel_path.name,
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
+        "sourceModifiedAt": source_modified,
         "chart": chart,
         "sheets": [extract_sheet(wb[name]) for name in wb.sheetnames],
     }
