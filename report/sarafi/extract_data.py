@@ -73,26 +73,23 @@ def main():
                 break
         if power: break
 
-    # خلاصه مالی: در فایل فعلی، عنوان‌ها در ستون M و مقدارها در ستون N هستند.
+    # خلاصه مالی: عنوان‌ها در ستون M و مقدارها در ستون N هستند.
+    # تطبیق بر اساس بخشی از متن عنوان انجام می‌شود تا با تغییر جزئی نام‌ها هم کار کند.
     summary = {"totalBuy": 0, "totalPaid": 0, "netProfit": 0, "marketCapital": 0}
-    labels = {
-        "جمعخرید": "totalBuy",
-        "جمعپرداختی": "totalPaid",
-        "سود(خالص)": "netProfit",
-        "سودخالص": "netProfit",
-        "سرمایهدربازار": "marketCapital",   # سرمایه در بازار
-    }
-    for row in ws.iter_rows(min_row=1, max_row=min(ws.max_row or 60, 60), min_col=1, max_col=30):
+    def key_of(label):
+        n = norm(label)
+        if not n: return None
+        if "جمع" in n and "پرداخت" in n: return "totalPaid"        # جمع کل پرداختی
+        if "جمع" in n and ("خرید" in n or "چک" in n): return "totalBuy"  # جمع کل چک ها / جمع خرید
+        if "سود" in n: return "netProfit"                            # سود (خالص)
+        if "سرمایه" in n and "بازار" in n: return "marketCapital"    # سرمایه در بازار
+        return None
+    for row in ws.iter_rows(min_row=1, max_row=min(ws.max_row or 60, 60), min_col=12, max_col=14):
         for cell in row:
-            key = labels.get(norm(cell.value))
-            if key:
-                value = ws.cell(cell.row, cell.column + 1).value
-                summary[key] = num(value)
-    # اگر سلول‌های خلاصه در ستون‌های استاندارد باشند، مستقیماً M/N را هم بررسی کن.
-    for r in range(1, 10):
-        key = labels.get(norm(ws.cell(r, 13).value))
-        if key:
-            summary[key] = num(ws.cell(r, 14).value)
+            if isinstance(cell.value, str):
+                key = key_of(cell.value)
+                if key and not summary[key]:
+                    summary[key] = num(ws.cell(cell.row, cell.column + 1).value)
 
     # تاریخ به‌روزرسانی: زمان آخرین ذخیره‌ی فایل اکسل
     mod = wb.properties.modified
