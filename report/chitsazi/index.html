@@ -86,13 +86,19 @@ tr.clk{cursor:pointer;outline:none}tr.clk:hover td,tr.clk:focus-visible td{backg
 body.noscroll{overflow:hidden}
 @media(min-width:801px){#sheet{align-items:center}.sheet-box{border-radius:22px;padding-top:18px}.grab{display:none}}
 @media(max-width:800px){
-  .table-wrap{display:none}
+  .exp-wrap{display:none}
   .m-list{display:block;border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:70vh;-webkit-overflow-scrolling:touch}
   .m-list .empty{background:#fff}
   .wrap{padding-left:calc(12px + env(safe-area-inset-left));padding-right:calc(12px + env(safe-area-inset-right))}
   .table-tools input{min-width:0;width:100%;font-size:16px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* تفکیک ردیف‌های ریز هزینه‌ها: رنگ بسیار ملایم یکی‌درمیان */
+#tbody tr.clk:nth-child(even) td{background:#f3f7fc}
+#tbody tr.clk:hover td,#tbody tr.clk:focus-visible td{background:#e8f0fb}
+.m-item:nth-child(even){background:#f3f7fc}
+.m-item:active,.m-item:focus-visible{background:#e8f0fb}
 </style>
 </head>
 <body class="locked">
@@ -110,9 +116,9 @@ body.noscroll{overflow:hidden}
 <section class="metrics5 section"><div class="card"><div class="metric-label">کل هزینه پروژه</div><div class="metric" id="total">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه انجام‌شده</div><div class="metric green" id="spent">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه باقیمانده</div><div class="metric orange" id="remaining">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">متراژ کل</div><div class="metric blue" id="meters">—</div><div class="metric-label">متر مربع</div></div><div class="card"><div class="metric-label">قیمت ساخت هر متر مربع</div><div class="metric blue" id="cpm">—</div><div class="metric-label">تومان</div></div></section>
 <section class="card section"><div class="section-head"><h2>پیشرفت هزینه‌های پروژه</h2><span class="status" id="snapshotDate"></span></div><div class="donut-area"><div class="donut"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="46" fill="none" stroke="#e8edf5" stroke-width="15"/><circle id="spentArc" cx="60" cy="60" r="46" fill="none" stroke="#159570" stroke-width="15" stroke-dasharray="0 289"/></svg><div class="donut-center"><strong id="percent">—</strong><span>هزینه انجام‌شده</span></div></div><div class="legend"><div class="legend-row"><span><i class="dot" style="background:#159570"></i>هزینه انجام‌شده</span><strong id="legendSpent">—</strong></div><div class="legend-row"><span><i class="dot" style="background:#e8edf5"></i>هزینه باقیمانده</span><strong id="legendRemaining">—</strong></div></div></div></section>
 <section class="card section"><div class="section-head"><h2>سهم هر دسته از هزینه‌های انجام‌شده</h2><span class="status">مبلغ جمع و درصد نسبت به کل هزینه انجام‌شده</span></div><div class="bars" id="bars"></div></section>
-<section class="card section"><div class="section-head"><h2>ریز هزینه‌ها</h2><span class="status" id="rowCount"></span></div><div class="table-tools"><input id="search" type="search" placeholder="جستجو در جدول…"></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div class="m-list" id="mList"></div><p class="hint">برای دیدن جزئیات کامل هر ردیف (تاریخ، توضیحات و…) روی آن بزنید.</p></section>
+<section class="card section"><div class="section-head"><h2>ریز هزینه‌ها</h2><span class="status" id="rowCount"></span></div><div class="table-tools"><input id="search" type="search" placeholder="جستجو در جدول…"></div><div class="table-wrap exp-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div class="m-list" id="mList"></div><p class="hint">برای دیدن جزئیات کامل هر ردیف (تاریخ، توضیحات و…) روی آن بزنید.</p></section>
 </div>
-<div id="price" class="hidden"><section class="card section"><div class="section-head"><div><h2 class="p-title" id="pTitle"></h2><span class="status" id="pSub"></span></div></div><div class="table-wrap"><table><thead id="pHead"></thead><tbody id="pBody"></tbody></table></div><div class="m-list" id="pList"></div><p class="hint">برای دیدن توضیحات تکمیلی و جزئیات هر آیتم روی آن بزنید.</p></section></div>
+<div id="price" class="hidden"><section class="card section"><div class="section-head"><div><h2 class="p-title" id="pTitle"></h2><span class="status" id="pSub"></span></div></div><div class="table-wrap"><table><thead id="pHead"></thead><tbody id="pBody"></tbody></table></div></section></div>
 <div class="footer">اطلاعات این صفحه از فایل data.json خوانده می‌شود.</div>
 </main>
 <div id="sheet" aria-hidden="true"><div class="sheet-box" role="dialog" aria-modal="true" aria-label="جزئیات" id="sheetBox"></div></div>
@@ -135,9 +141,9 @@ function render(){const s=D.summary;$('projectTitle').textContent=D.project;docu
  const e=D.expenses;$('thead').innerHTML='<tr>'+e.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';renderRows();
  const P=D.pricing;$('pTitle').textContent=P.title||'';$('pSub').textContent=[P.project,P.date&&PD(P.date)].filter(Boolean).join(' · ');
  $('pHead').innerHTML='<tr>'+P.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
- const body=P.rows.map((r,i)=>'<tr class="clk" data-k="p" data-i="'+i+'" tabindex="0" role="button">'+r.map(cell).join('')+'</tr>');
+ const body=P.rows.map(r=>'<tr>'+r.map(cell).join('')+'</tr>');
  const sums=P.summary.map((x,i)=>{const [c,b,a]=x.values;return `<tr class="sum ${i>=2?'key':''}"><td></td><td>${esc(x.label)}</td>${[c,b,a].map(v=>v==null?'<td></td>':cell(v)).join('')}</tr>`});
- $('pBody').innerHTML=body.concat(sums).join('');renderPriceList();}
+ $('pBody').innerHTML=body.concat(sums).join('');}
 /* ---------- تاریخ‌ها (قالب‌های مختلف اکسل را یکدست می‌کنیم) ---------- */
 const MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
 const toLatin=s=>String(s??'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
@@ -146,7 +152,7 @@ const shortDate=v=>{const p=pdate(v);return p?PD(p.y+'/'+String(p.m).padStart(2,
 const longDate=v=>{const p=pdate(v);return p&&MONTHS[p.m-1]?PD(p.d+' '+MONTHS[p.m-1]+' '+p.y):esc(v)};
 
 /* ---------- فهرست‌ها ---------- */
-let EXP=[],PRI=[];
+let EXP=[];
 function renderRows(){
  const q=$('search').value.trim(),ql=toLatin(q);
  const rows=D.expenses.rows.filter(r=>!q||r.some(v=>{const t=String(v??'');return t.includes(q)||toLatin(t).includes(ql)})||toLatin(shortDate(r[2])).includes(ql)||shortDate(r[2]).includes(q));
@@ -156,13 +162,6 @@ function renderRows(){
  $('tbody').innerHTML=rows.map((r,i)=>`<tr class="clk" data-k="e" data-i="${i}" tabindex="0" role="button">`+r.slice(0,4).map((v,k)=>k===2?`<td>${shortDate(v)}</td>`:cell(v)).join('')+'</tr>').join('')+`<tr class="sum"><td colspan="3">جمع</td><td class="num">${fmt(total)}</td></tr>`;
  $('mList').innerHTML=rows.length?rows.map((r,i)=>`<div class="m-item" data-k="e" data-i="${i}" tabindex="0" role="button"><div class="m-main"><div class="m-title">${esc(r[1])}</div><div class="m-sub"><span>${esc(r[0])}</span><span>${shortDate(r[2])}</span></div></div><div class="m-amt">${fmt(r[3])}<small>تومان</small></div></div>`).join('')+`<div class="m-total"><span>جمع</span><span>${fmt(total)} تومان</span></div>`:'<div class="empty">موردی پیدا نشد.</div>';
 }
-function renderPriceList(){
- const P=D.pricing,H=P.header;PRI=P.rows;
- $('pList').innerHTML=PRI.map((r,i)=>{const [name,desc,upd,,act]=r;const pc=upd>0&&typeof act==='number'?Math.min(100,act/upd*100):0;
-  return `<div class="m-item" data-k="p" data-i="${i}" tabindex="0" role="button"><div class="m-main"><div class="m-title">${esc(name)}</div><div class="m-sub"><span>${esc(desc)}</span></div>${upd>0?`<div class="m-bar"><i style="width:${pc}%"></i></div>`:''}</div><div class="m-amt">${fmt(act)}<small>انجام‌شده</small></div></div>`}).join('')
- +P.summary.map(x=>{const [c,b,a]=x.values;const v=n=>n==null?'—':fmt(n,0);return `<div class="m-sumcard"><b>${esc(x.label)}</b><div class="row3"><div><span>${esc(H[2])}</span><em>${v(c)}</em></div><div><span>${esc(H[3])}</span><em>${v(b)}</em></div><div><span>${esc(H[4])}</span><em>${v(a)}</em></div></div></div>`}).join('');
-}
-
 /* ---------- پنجره جزئیات ---------- */
 const item=(label,html,cls='')=>`<div class="d-item ${cls}"><span>${label}</span><b>${html}</b></div>`;
 const note=(label,text)=>`<div class="d-item full"><span>${label}</span><div class="d-note">${PD(esc(text))}</div></div>`;
@@ -173,17 +172,10 @@ function dExp(r){const [cat,name,date,amt,desc,ptype,payer,extra]=r;
  +(ptype?item('نوع پرداخت',esc(ptype)):'')
  +item('دسته‌بندی',esc(cat))
  +(desc?note('توضیحات',desc):'')+(extra!=null&&extra!==''?note('توضیح تکمیلی',extra):'')+'</div>';}
-function dPri(r){const [name,desc,upd,ini,act]=r;const H=D.pricing.header;
- const rem=(upd||0)-(act||0),pc=upd>0?(act||0)/upd*100:null;
- return `<div class="d-cat">${esc(D.pricing.project||'')}</div><div class="d-title">${esc(name)}</div><div class="d-amount">${fmt(act,0)}<small>تومان انجام‌شده</small></div><div class="d-grid">`
- +(desc?note(esc(H[1]),desc):'')
- +item(esc(H[2]),fmt(upd,0))+item(esc(H[3]),fmt(ini,0))
- +(pc==null?'':item('درصد پیشرفت',fmt(pc,1)+'٪')+(rem>=0?item('باقیمانده تا تخمین',fmt(rem,0)):item('بیشتر از تخمین',fmt(-rem,0),'warn')))
- +'</div>';}
-let curK='e',cur=-1;const arrOf=k=>k==='e'?EXP:PRI;
+let curK='e',cur=-1;const arrOf=k=>EXP;
 function showDetail(k,i){const arr=arrOf(k),r=arr[i];if(!r)return;curK=k;cur=i;
- $('sheetBox').innerHTML=`<div class="grab"></div><div class="sheet-top"><span class="d-tag">${k==='e'?'جزئیات هزینه':'جزئیات آیتم'}</span><button class="x" id="dClose" aria-label="بستن">✕</button></div>`
-  +(k==='e'?dExp(r):dPri(r))
+ $('sheetBox').innerHTML=`<div class="grab"></div><div class="sheet-top"><span class="d-tag">جزئیات هزینه</span><button class="x" id="dClose" aria-label="بستن">✕</button></div>`
+  +dExp(r)
   +`<div class="d-nav"><button id="dPrev" ${i<=0?'disabled':''}>› قبلی</button><span class="pos">${fmt(i+1,0)} از ${fmt(arr.length,0)}</span><button id="dNext" ${i>=arr.length-1?'disabled':''}>بعدی ‹</button></div>`;
  $('dClose').onclick=()=>closeDetail();$('dPrev').onclick=()=>showDetail(curK,cur-1);$('dNext').onclick=()=>showDetail(curK,cur+1);$('sheetBox').scrollTop=0;}
 function openDetail(k,i){const was=$('sheet').classList.contains('open');showDetail(k,i);
@@ -196,7 +188,7 @@ window.addEventListener('popstate',()=>closeDetail(true));
 $('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))closeDetail()});
 document.addEventListener('keydown',e=>{if(!$('sheet').classList.contains('open'))return;
  if(e.key==='Escape')closeDetail();else if(e.key==='ArrowRight'&&cur>0)showDetail(curK,cur-1);else if(e.key==='ArrowLeft'&&cur<arrOf(curK).length-1)showDetail(curK,cur+1);});
-for(const id of ['tbody','mList','pBody','pList']){const el=$(id);
+for(const id of ['tbody','mList']){const el=$(id);
  el.addEventListener('click',e=>{const t=e.target.closest('[data-i]');if(t)openDetail(t.dataset.k,Number(t.dataset.i))});
  el.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target.closest('[data-i]');if(t){e.preventDefault();openDetail(t.dataset.k,Number(t.dataset.i))}});}
 document.querySelectorAll('.mainTabs .tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mainTabs .tab').forEach(x=>x.classList.toggle('active',x===b));$('dash').classList.toggle('hidden',b.dataset.v!=='dash');$('price').classList.toggle('hidden',b.dataset.v!=='price');}));
