@@ -40,6 +40,59 @@ body.locked .wrap{display:none}
 tr.sum td{font-weight:800;background:#eef4fc}tr.sum.key td{background:#fff6e0}.num{white-space:nowrap}
 .p-title{margin:0 0 4px;font-size:20px}
 @media(max-width:900px){.metrics5{grid-template-columns:repeat(2,minmax(0,1fr))}.bars{grid-template-columns:1fr}.bar-row{grid-template-columns:100px 1fr auto}}
+
+/* ردیف‌های قابل‌کلیک + فهرست فشرده موبایل + پنجره جزئیات */
+tr.clk{cursor:pointer;outline:none}tr.clk:hover td,tr.clk:focus-visible td{background:#f4f8fe}
+.hint{color:var(--muted);font-size:13px;margin:8px 2px 0}
+.m-list{display:none}
+.m-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:9px 12px;border-bottom:1px solid #edf1f6;background:#fff;cursor:pointer;outline:none}
+.m-item:active,.m-item:focus-visible{background:#f4f8fe}
+.m-title{font-weight:bold;font-size:15px;line-height:1.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-sub{display:flex;gap:8px;color:var(--muted);font-size:12.5px;line-height:1.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-sub span:not(:first-child)::before{content:"·";margin-left:8px}
+.m-main{min-width:0}
+.m-amt{font-weight:800;font-size:15px;text-align:left;white-space:nowrap;line-height:1.5}
+.m-amt small{display:block;font-weight:400;color:var(--muted);font-size:11px;line-height:1.3}
+.m-bar{height:5px;border-radius:5px;background:#e8edf5;overflow:hidden;margin-top:4px;direction:rtl}.m-bar i{display:block;height:100%;background:linear-gradient(270deg,#159570,#2bb88f)}
+.m-total{display:flex;justify-content:space-between;padding:11px 12px;background:#eef4fc;font-weight:800;position:sticky;bottom:0}
+.m-sumcard{padding:10px 12px;background:#fff6e0;border-bottom:1px solid #edf1f6}
+.m-sumcard b{display:block;margin-bottom:2px}
+.m-sumcard .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;text-align:center}
+.m-sumcard .row3 div{background:#ffffffa8;border-radius:8px;padding:3px 2px;min-width:0}
+.m-sumcard .row3 span{display:block;font-size:10px;color:var(--muted);line-height:1.4}
+.m-sumcard .row3 em{font-style:normal;font-weight:800;font-size:12px;white-space:nowrap}
+
+#sheet{position:fixed;inset:0;z-index:5000;display:flex;align-items:flex-end;justify-content:center;background:#0b1a2d80;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+#sheet.open{opacity:1;visibility:visible}
+.sheet-box{width:100%;max-width:540px;max-height:90vh;max-height:90dvh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:8px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px #00000040;transform:translateY(40px);transition:transform .25s cubic-bezier(.2,.9,.3,1)}
+#sheet.open .sheet-box{transform:none}
+.grab{width:42px;height:5px;border-radius:9px;background:#d5dbe5;margin:4px auto 10px}
+.sheet-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.d-tag{display:inline-block;background:#e8eef9;color:#23436d;border-radius:999px;padding:1px 14px;font-weight:bold;font-size:14px}
+.x{border:0;background:#eef2f7;width:36px;height:36px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;flex:0 0 auto}
+.d-cat{color:var(--blue);font-weight:bold;font-size:14px}
+.d-title{font-size:20px;font-weight:800;line-height:1.6;overflow-wrap:anywhere}
+.d-amount{font-size:24px;font-weight:900;margin:2px 0 12px}.d-amount small{font-size:13px;font-weight:500;color:var(--muted);margin-right:5px}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.d-item{background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:7px 12px;min-width:0}
+.d-item.full{grid-column:1/-1}
+.d-item span{display:block;color:var(--muted);font-size:13px;line-height:1.6}
+.d-item b{font-size:16.5px;overflow-wrap:anywhere;font-weight:800}.d-item b small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.d-item.warn b{color:#b96b00}
+.d-note{white-space:pre-wrap;word-break:break-word;line-height:2;font-size:16.5px}
+.d-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px}
+.d-nav button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px;font:inherit;cursor:pointer;min-height:42px}
+.d-nav button:disabled{opacity:.45;cursor:default}.d-nav .pos{color:var(--muted);font-size:13px;flex:0 0 auto}
+body.noscroll{overflow:hidden}
+@media(min-width:801px){#sheet{align-items:center}.sheet-box{border-radius:22px;padding-top:18px}.grab{display:none}}
+@media(max-width:800px){
+  .table-wrap{display:none}
+  .m-list{display:block;border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:70vh;-webkit-overflow-scrolling:touch}
+  .m-list .empty{background:#fff}
+  .wrap{padding-left:calc(12px + env(safe-area-inset-left));padding-right:calc(12px + env(safe-area-inset-right))}
+  .table-tools input{min-width:0;width:100%;font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body class="locked">
@@ -57,11 +110,12 @@ tr.sum td{font-weight:800;background:#eef4fc}tr.sum.key td{background:#fff6e0}.n
 <section class="metrics5 section"><div class="card"><div class="metric-label">کل هزینه پروژه</div><div class="metric" id="total">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه انجام‌شده</div><div class="metric green" id="spent">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">هزینه باقیمانده</div><div class="metric orange" id="remaining">—</div><div class="metric-label">تومان</div></div><div class="card"><div class="metric-label">متراژ کل</div><div class="metric blue" id="meters">—</div><div class="metric-label">متر مربع</div></div><div class="card"><div class="metric-label">قیمت ساخت هر متر مربع</div><div class="metric blue" id="cpm">—</div><div class="metric-label">تومان</div></div></section>
 <section class="card section"><div class="section-head"><h2>پیشرفت هزینه‌های پروژه</h2><span class="status" id="snapshotDate"></span></div><div class="donut-area"><div class="donut"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="46" fill="none" stroke="#e8edf5" stroke-width="15"/><circle id="spentArc" cx="60" cy="60" r="46" fill="none" stroke="#159570" stroke-width="15" stroke-dasharray="0 289"/></svg><div class="donut-center"><strong id="percent">—</strong><span>هزینه انجام‌شده</span></div></div><div class="legend"><div class="legend-row"><span><i class="dot" style="background:#159570"></i>هزینه انجام‌شده</span><strong id="legendSpent">—</strong></div><div class="legend-row"><span><i class="dot" style="background:#e8edf5"></i>هزینه باقیمانده</span><strong id="legendRemaining">—</strong></div></div></div></section>
 <section class="card section"><div class="section-head"><h2>سهم هر دسته از هزینه‌های انجام‌شده</h2><span class="status">مبلغ جمع و درصد نسبت به کل هزینه انجام‌شده</span></div><div class="bars" id="bars"></div></section>
-<section class="card section"><div class="section-head"><h2>ریز هزینه‌ها</h2><span class="status" id="rowCount"></span></div><div class="table-tools"><input id="search" type="search" placeholder="جستجو در جدول…"></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section>
+<section class="card section"><div class="section-head"><h2>ریز هزینه‌ها</h2><span class="status" id="rowCount"></span></div><div class="table-tools"><input id="search" type="search" placeholder="جستجو در جدول…"></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div class="m-list" id="mList"></div><p class="hint">برای دیدن جزئیات کامل هر ردیف (تاریخ، توضیحات و…) روی آن بزنید.</p></section>
 </div>
-<div id="price" class="hidden"><section class="card section"><div class="section-head"><div><h2 class="p-title" id="pTitle"></h2><span class="status" id="pSub"></span></div></div><div class="table-wrap"><table><thead id="pHead"></thead><tbody id="pBody"></tbody></table></div></section></div>
+<div id="price" class="hidden"><section class="card section"><div class="section-head"><div><h2 class="p-title" id="pTitle"></h2><span class="status" id="pSub"></span></div></div><div class="table-wrap"><table><thead id="pHead"></thead><tbody id="pBody"></tbody></table></div><div class="m-list" id="pList"></div><p class="hint">برای دیدن توضیحات تکمیلی و جزئیات هر آیتم روی آن بزنید.</p></section></div>
 <div class="footer">اطلاعات این صفحه از فایل data.json خوانده می‌شود.</div>
 </main>
+<div id="sheet" aria-hidden="true"><div class="sheet-box" role="dialog" aria-modal="true" aria-label="جزئیات" id="sheetBox"></div></div>
 <script>
 const $=id=>document.getElementById(id);let D=null;
 const PD=s=>String(s).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
@@ -81,12 +135,70 @@ function render(){const s=D.summary;$('projectTitle').textContent=D.project;docu
  const e=D.expenses;$('thead').innerHTML='<tr>'+e.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';renderRows();
  const P=D.pricing;$('pTitle').textContent=P.title||'';$('pSub').textContent=[P.project,P.date&&PD(P.date)].filter(Boolean).join(' · ');
  $('pHead').innerHTML='<tr>'+P.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
- const body=P.rows.map(r=>'<tr>'+r.map(cell).join('')+'</tr>');
+ const body=P.rows.map((r,i)=>'<tr class="clk" data-k="p" data-i="'+i+'" tabindex="0" role="button">'+r.map(cell).join('')+'</tr>');
  const sums=P.summary.map((x,i)=>{const [c,b,a]=x.values;return `<tr class="sum ${i>=2?'key':''}"><td></td><td>${esc(x.label)}</td>${[c,b,a].map(v=>v==null?'<td></td>':cell(v)).join('')}</tr>`});
- $('pBody').innerHTML=body.concat(sums).join('');}
-function renderRows(){const q=$('search').value.trim(),rows=D.expenses.rows.filter(r=>!q||r.some(v=>String(v??'').includes(q)));
+ $('pBody').innerHTML=body.concat(sums).join('');renderPriceList();}
+/* ---------- تاریخ‌ها (قالب‌های مختلف اکسل را یکدست می‌کنیم) ---------- */
+const MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const toLatin=s=>String(s??'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+function pdate(v){const t=toLatin(v).trim();let m=t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/);if(m)return{y:+m[1],m:+m[2],d:+m[3]};m=t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/);return m?{y:+m[3],m:+m[2],d:+m[1]}:null;}
+const shortDate=v=>{const p=pdate(v);return p?PD(p.y+'/'+String(p.m).padStart(2,'0')+'/'+String(p.d).padStart(2,'0')):esc(v)};
+const longDate=v=>{const p=pdate(v);return p&&MONTHS[p.m-1]?PD(p.d+' '+MONTHS[p.m-1]+' '+p.y):esc(v)};
+
+/* ---------- فهرست‌ها ---------- */
+let EXP=[],PRI=[];
+function renderRows(){
+ const q=$('search').value.trim(),ql=toLatin(q);
+ const rows=D.expenses.rows.filter(r=>!q||r.some(v=>{const t=String(v??'');return t.includes(q)||toLatin(t).includes(ql)})||toLatin(shortDate(r[2])).includes(ql)||shortDate(r[2]).includes(q));
+ EXP=rows;
+ const total=rows.reduce((a,r)=>a+(typeof r[3]==='number'?r[3]:0),0);
  $('rowCount').textContent=fmt(rows.length)+' ردیف';
- $('tbody').innerHTML=rows.map(r=>'<tr>'+r.map(cell).join('')+'</tr>').join('')+`<tr class="sum"><td colspan="3">جمع</td><td class="num">${fmt(rows.reduce((a,r)=>a+(typeof r[3]==='number'?r[3]:0),0))}</td></tr>`;}
+ $('tbody').innerHTML=rows.map((r,i)=>`<tr class="clk" data-k="e" data-i="${i}" tabindex="0" role="button">`+r.slice(0,4).map((v,k)=>k===2?`<td>${shortDate(v)}</td>`:cell(v)).join('')+'</tr>').join('')+`<tr class="sum"><td colspan="3">جمع</td><td class="num">${fmt(total)}</td></tr>`;
+ $('mList').innerHTML=rows.length?rows.map((r,i)=>`<div class="m-item" data-k="e" data-i="${i}" tabindex="0" role="button"><div class="m-main"><div class="m-title">${esc(r[1])}</div><div class="m-sub"><span>${esc(r[0])}</span><span>${shortDate(r[2])}</span></div></div><div class="m-amt">${fmt(r[3])}<small>تومان</small></div></div>`).join('')+`<div class="m-total"><span>جمع</span><span>${fmt(total)} تومان</span></div>`:'<div class="empty">موردی پیدا نشد.</div>';
+}
+function renderPriceList(){
+ const P=D.pricing,H=P.header;PRI=P.rows;
+ $('pList').innerHTML=PRI.map((r,i)=>{const [name,desc,upd,,act]=r;const pc=upd>0&&typeof act==='number'?Math.min(100,act/upd*100):0;
+  return `<div class="m-item" data-k="p" data-i="${i}" tabindex="0" role="button"><div class="m-main"><div class="m-title">${esc(name)}</div><div class="m-sub"><span>${esc(desc)}</span></div>${upd>0?`<div class="m-bar"><i style="width:${pc}%"></i></div>`:''}</div><div class="m-amt">${fmt(act)}<small>انجام‌شده</small></div></div>`}).join('')
+ +P.summary.map(x=>{const [c,b,a]=x.values;const v=n=>n==null?'—':fmt(n,0);return `<div class="m-sumcard"><b>${esc(x.label)}</b><div class="row3"><div><span>${esc(H[2])}</span><em>${v(c)}</em></div><div><span>${esc(H[3])}</span><em>${v(b)}</em></div><div><span>${esc(H[4])}</span><em>${v(a)}</em></div></div></div>`}).join('');
+}
+
+/* ---------- پنجره جزئیات ---------- */
+const item=(label,html,cls='')=>`<div class="d-item ${cls}"><span>${label}</span><b>${html}</b></div>`;
+const note=(label,text)=>`<div class="d-item full"><span>${label}</span><div class="d-note">${PD(esc(text))}</div></div>`;
+function dExp(r){const [cat,name,date,amt,desc,ptype,payer,extra]=r;
+ return `<div class="d-cat">${esc(cat)}</div><div class="d-title">${esc(name)}</div><div class="d-amount">${fmt(amt)}<small>تومان</small></div><div class="d-grid">`
+ +item('تاریخ پرداخت',`${longDate(date)}<small>${shortDate(date)}</small>`)
+ +(payer?item('پرداخت‌کننده',esc(payer)):'')
+ +(ptype?item('نوع پرداخت',esc(ptype)):'')
+ +item('دسته‌بندی',esc(cat))
+ +(desc?note('توضیحات',desc):'')+(extra!=null&&extra!==''?note('توضیح تکمیلی',extra):'')+'</div>';}
+function dPri(r){const [name,desc,upd,ini,act]=r;const H=D.pricing.header;
+ const rem=(upd||0)-(act||0),pc=upd>0?(act||0)/upd*100:null;
+ return `<div class="d-cat">${esc(D.pricing.project||'')}</div><div class="d-title">${esc(name)}</div><div class="d-amount">${fmt(act,0)}<small>تومان انجام‌شده</small></div><div class="d-grid">`
+ +(desc?note(esc(H[1]),desc):'')
+ +item(esc(H[2]),fmt(upd,0))+item(esc(H[3]),fmt(ini,0))
+ +(pc==null?'':item('درصد پیشرفت',fmt(pc,1)+'٪')+(rem>=0?item('باقیمانده تا تخمین',fmt(rem,0)):item('بیشتر از تخمین',fmt(-rem,0),'warn')))
+ +'</div>';}
+let curK='e',cur=-1;const arrOf=k=>k==='e'?EXP:PRI;
+function showDetail(k,i){const arr=arrOf(k),r=arr[i];if(!r)return;curK=k;cur=i;
+ $('sheetBox').innerHTML=`<div class="grab"></div><div class="sheet-top"><span class="d-tag">${k==='e'?'جزئیات هزینه':'جزئیات آیتم'}</span><button class="x" id="dClose" aria-label="بستن">✕</button></div>`
+  +(k==='e'?dExp(r):dPri(r))
+  +`<div class="d-nav"><button id="dPrev" ${i<=0?'disabled':''}>› قبلی</button><span class="pos">${fmt(i+1,0)} از ${fmt(arr.length,0)}</span><button id="dNext" ${i>=arr.length-1?'disabled':''}>بعدی ‹</button></div>`;
+ $('dClose').onclick=()=>closeDetail();$('dPrev').onclick=()=>showDetail(curK,cur-1);$('dNext').onclick=()=>showDetail(curK,cur+1);$('sheetBox').scrollTop=0;}
+function openDetail(k,i){const was=$('sheet').classList.contains('open');showDetail(k,i);
+ $('sheet').classList.add('open');$('sheet').setAttribute('aria-hidden','false');document.body.classList.add('noscroll');
+ if(!was){try{history.pushState({sheet:1},'')}catch(_){}}$('dClose').focus({preventScroll:true});}
+function closeDetail(fromPop){if(!$('sheet').classList.contains('open'))return;
+ $('sheet').classList.remove('open');$('sheet').setAttribute('aria-hidden','true');document.body.classList.remove('noscroll');
+ if(fromPop!==true&&history.state&&history.state.sheet){try{history.back()}catch(_){}}}
+window.addEventListener('popstate',()=>closeDetail(true));
+$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))closeDetail()});
+document.addEventListener('keydown',e=>{if(!$('sheet').classList.contains('open'))return;
+ if(e.key==='Escape')closeDetail();else if(e.key==='ArrowRight'&&cur>0)showDetail(curK,cur-1);else if(e.key==='ArrowLeft'&&cur<arrOf(curK).length-1)showDetail(curK,cur+1);});
+for(const id of ['tbody','mList','pBody','pList']){const el=$(id);
+ el.addEventListener('click',e=>{const t=e.target.closest('[data-i]');if(t)openDetail(t.dataset.k,Number(t.dataset.i))});
+ el.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target.closest('[data-i]');if(t){e.preventDefault();openDetail(t.dataset.k,Number(t.dataset.i))}});}
 document.querySelectorAll('.mainTabs .tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mainTabs .tab').forEach(x=>x.classList.toggle('active',x===b));$('dash').classList.toggle('hidden',b.dataset.v!=='dash');$('price').classList.toggle('hidden',b.dataset.v!=='price');}));
 $('reloadBtn').addEventListener('click',loadData);$('search').addEventListener('input',renderRows);
 const HASHES=["d6eeee3753896a8e2f787e2aea7c98cb928c470e7cec9521611b554575897212","129109a2e615337868655325a36baf42c85215b67159e0209a588ef500fe37d3","35919aecb68ba703230812729ad27129912fa9b6d63e78897e45e2049b93b612"];

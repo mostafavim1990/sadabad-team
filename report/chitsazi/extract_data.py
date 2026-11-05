@@ -62,8 +62,10 @@ def main():
     rows, by_cat = [], {}
     for r in range(hdr + 1, (first.max_row or hdr) + 1):
         b, c, f, h = (val(first.cell(r, k).value) for k in (2, 3, 6, 8))
+        # اطلاعات تکمیلی که فقط در پنجره جزئیات نمایش داده می‌شود: D توضیحات، E نوع پرداخت، G پرداخت‌کننده، I توضیح تکمیلی
+        d, e, g, i = (val(first.cell(r, k).value) for k in (4, 5, 7, 9))
         if first.cell(r, 1).value not in (None, "") and (b or c):  # ردیف می‌تواند مثل 261/1 هم باشد
-            rows.append([b, c, f if f != "-" else None, h])
+            rows.append([b, c, f if f != "-" else None, h, d, e, g, i])
             if b: by_cat[norm(b)] = by_cat.get(norm(b), 0) + num(h)
 
     spent = num(find_labeled(first, ["جمع کل", "جمع هزینه های انجام شده"])) or sum(num(x[3]) for x in rows)

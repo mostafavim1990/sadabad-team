@@ -59,6 +59,14 @@ def is_passed(status):
     text = " ".join(text.split())
     return "پاس شده" in text or "وصول شده" in text or "نقد شده" in text
 
+def get_state(status):
+    """وضعیت چک برای رنگ‌بندی و خلاصه بالای صفحه: passed / void / open / other"""
+    if is_passed(status): return "passed"
+    text = " ".join(normalize_digits(status).replace("‌", " ").split())
+    if "باطل" in text: return "void"
+    if text.startswith("چک"): return "open"
+    return "other"
+
 def main():
     try:
         import openpyxl
@@ -85,15 +93,19 @@ def main():
         now=date.today()
         today=gregorian_to_jalali(now.year,now.month,now.day)
         records=[]
-        # ستون‌های B، C، F، H و I؛ داده‌ها از ردیف 5 شروع می‌شوند.
+        # ستون‌های B تا I؛ داده‌ها از ردیف 5 شروع می‌شوند:
+        # B پروژه، C گیرنده، D توضیحات، E صاحب چک، F وضعیت، G تاریخ صدور، H سررسید، I مبلغ
         for values in sheet.iter_rows(min_row=5,min_col=2,max_col=9,values_only=True):
             selected=[values[0],values[1],values[4],values[6],values[7]]
             if not any(v not in ("",None) for v in selected): continue
             project,recipient,status,due_date,amount=[clean(v) for v in selected]
+            note,owner,issue_date=[clean(values[i]) for i in (2,3,5)]
             passed = is_passed(status)
             records.append({"project":project,"recipient":recipient,"status":status,
                             "dueDate":due_date,"amount":amount,"period":get_period(due_date,today),
-                            "passed":passed,"_sortDate":sort_date_key(due_date)})
+                            "passed":passed,"state":get_state(status),
+                            "note":note,"owner":owner,"issueDate":issue_date,
+                            "_sortDate":sort_date_key(due_date)})
         # مرتب‌سازی بر اساس نزدیک‌ترین تاریخ سررسید؛ تاریخ‌های نامشخص در انتها.
         records.sort(key=lambda row: row["_sortDate"])
         for row in records:
