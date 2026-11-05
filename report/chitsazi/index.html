@@ -91,6 +91,18 @@ body.noscroll{overflow:hidden}
   .m-list .empty{background:#fff}
   .wrap{padding-left:calc(12px + env(safe-area-inset-left));padding-right:calc(12px + env(safe-area-inset-right))}
   .table-tools input{min-width:0;width:100%;font-size:16px}
+  /* جدول قیمت‌گذاری در موبایل: بدون ستون توضیحات جا می‌شود، پس کمی فشرده‌اش می‌کنیم تا اسکرول افقی نخواهد */
+  #price th,#price td{min-width:0;padding:8px 4px;font-size:12px;line-height:1.6}
+  #price th{font-size:11px;line-height:1.5}
+  #price td:first-child,#price th:first-child{min-width:62px;overflow-wrap:normal;word-break:normal;padding-right:8px;font-weight:bold}
+  #price td.num{font-size:11.5px;letter-spacing:-.2px}
+}
+@media(max-width:380px){
+  #price th,#price td{padding:7px 3px}
+  #price th{font-size:10px}
+  #price td:first-child,#price th:first-child{min-width:54px;padding-right:6px;font-size:11.5px}
+  #price td.num{font-size:10.2px;letter-spacing:-.3px}
+  #price .card{padding:12px 6px}#price .section-head{padding:0 8px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
@@ -118,7 +130,7 @@ body.noscroll{overflow:hidden}
 <section class="card section"><div class="section-head"><h2>سهم هر دسته از هزینه‌های انجام‌شده</h2><span class="status">مبلغ جمع و درصد نسبت به کل هزینه انجام‌شده</span></div><div class="bars" id="bars"></div></section>
 <section class="card section"><div class="section-head"><h2>ریز هزینه‌ها</h2><span class="status" id="rowCount"></span></div><div class="table-tools"><input id="search" type="search" placeholder="جستجو در جدول…"></div><div class="table-wrap exp-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div><div class="m-list" id="mList"></div><p class="hint">برای دیدن جزئیات کامل هر ردیف (تاریخ، توضیحات و…) روی آن بزنید.</p></section>
 </div>
-<div id="price" class="hidden"><section class="card section"><div class="section-head"><div><h2 class="p-title" id="pTitle"></h2><span class="status" id="pSub"></span></div></div><div class="table-wrap"><table><thead id="pHead"></thead><tbody id="pBody"></tbody></table></div></section></div>
+<div id="price" class="hidden"><section class="card section"><div class="section-head"><div><h2 class="p-title" id="pTitle"></h2><span class="status" id="pSub"></span></div></div><div class="table-wrap"><table><thead id="pHead"></thead><tbody id="pBody"></tbody></table></div><p class="hint">برای دیدن توضیحات تکمیلی هر آیتم روی آن بزنید.</p></section></div>
 <div class="footer">اطلاعات این صفحه از فایل data.json خوانده می‌شود.</div>
 </main>
 <div id="sheet" aria-hidden="true"><div class="sheet-box" role="dialog" aria-modal="true" aria-label="جزئیات" id="sheetBox"></div></div>
@@ -140,9 +152,9 @@ function render(){const s=D.summary;$('projectTitle').textContent=D.project;docu
  $('bars').innerHTML=D.categories.map(k=>`<div class="bar-row ${k.sum?'':'zero'}"><div class="bar-name">${esc(k.name)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,k.percent)}%"></div></div><div class="bar-val"><b>${fmt(k.sum,0)}</b> تومان · ${fmt(k.percent,1)}٪</div></div>`).join('');
  const e=D.expenses;$('thead').innerHTML='<tr>'+e.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';renderRows();
  const P=D.pricing;$('pTitle').textContent=P.title||'';$('pSub').textContent=[P.project,P.date&&PD(P.date)].filter(Boolean).join(' · ');
- $('pHead').innerHTML='<tr>'+P.header.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
- const body=P.rows.map(r=>'<tr>'+r.map(cell).join('')+'</tr>');
- const sums=P.summary.map((x,i)=>{const [c,b,a]=x.values;return `<tr class="sum ${i>=2?'key':''}"><td></td><td>${esc(x.label)}</td>${[c,b,a].map(v=>v==null?'<td></td>':cell(v)).join('')}</tr>`});
+ PRI=P.rows;$('pHead').innerHTML='<tr>'+P.header.filter((h,k)=>k!==1).map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
+ const body=P.rows.map((r,i)=>'<tr class="clk" data-k="p" data-i="'+i+'" tabindex="0" role="button">'+r.filter((v,k)=>k!==1).map(cell).join('')+'</tr>');
+ const sums=P.summary.map((x,i)=>{const [c,b,a]=x.values;return `<tr class="sum ${i>=2?'key':''}"><td>${esc(x.label)}</td>${[c,b,a].map(v=>v==null?'<td></td>':cell(v)).join('')}</tr>`});
  $('pBody').innerHTML=body.concat(sums).join('');}
 /* ---------- تاریخ‌ها (قالب‌های مختلف اکسل را یکدست می‌کنیم) ---------- */
 const MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
@@ -152,7 +164,7 @@ const shortDate=v=>{const p=pdate(v);return p?PD(p.y+'/'+String(p.m).padStart(2,
 const longDate=v=>{const p=pdate(v);return p&&MONTHS[p.m-1]?PD(p.d+' '+MONTHS[p.m-1]+' '+p.y):esc(v)};
 
 /* ---------- فهرست‌ها ---------- */
-let EXP=[];
+let EXP=[],PRI=[];
 function renderRows(){
  const q=$('search').value.trim(),ql=toLatin(q);
  const rows=D.expenses.rows.filter(r=>!q||r.some(v=>{const t=String(v??'');return t.includes(q)||toLatin(t).includes(ql)})||toLatin(shortDate(r[2])).includes(ql)||shortDate(r[2]).includes(q));
@@ -165,6 +177,8 @@ function renderRows(){
 /* ---------- پنجره جزئیات ---------- */
 const item=(label,html,cls='')=>`<div class="d-item ${cls}"><span>${label}</span><b>${html}</b></div>`;
 const note=(label,text)=>`<div class="d-item full"><span>${label}</span><div class="d-note">${PD(esc(text))}</div></div>`;
+function dPri(r){const [name,desc]=r;
+ return `<div class="d-cat">${esc(D.pricing.project||'')}</div><div class="d-title">${esc(name)}</div><div class="d-grid"><div class="d-item full"><span>توضیحات تکمیلی</span>${desc?`<div class="d-note">${PD(esc(desc))}</div>`:'<div class="d-note" style="color:var(--muted)">توضیحی ثبت نشده است.</div>'}</div></div>`;}
 function dExp(r){const [cat,name,date,amt,desc,ptype,payer,extra]=r;
  return `<div class="d-cat">${esc(cat)}</div><div class="d-title">${esc(name)}</div><div class="d-amount">${fmt(amt)}<small>تومان</small></div><div class="d-grid">`
  +item('تاریخ پرداخت',`${longDate(date)}<small>${shortDate(date)}</small>`)
@@ -172,10 +186,10 @@ function dExp(r){const [cat,name,date,amt,desc,ptype,payer,extra]=r;
  +(ptype?item('نوع پرداخت',esc(ptype)):'')
  +item('دسته‌بندی',esc(cat))
  +(desc?note('توضیحات',desc):'')+(extra!=null&&extra!==''?note('توضیح تکمیلی',extra):'')+'</div>';}
-let curK='e',cur=-1;const arrOf=k=>EXP;
+let curK='e',cur=-1;const arrOf=k=>k==='p'?PRI:EXP;
 function showDetail(k,i){const arr=arrOf(k),r=arr[i];if(!r)return;curK=k;cur=i;
- $('sheetBox').innerHTML=`<div class="grab"></div><div class="sheet-top"><span class="d-tag">جزئیات هزینه</span><button class="x" id="dClose" aria-label="بستن">✕</button></div>`
-  +dExp(r)
+ $('sheetBox').innerHTML=`<div class="grab"></div><div class="sheet-top"><span class="d-tag">${k==='p'?'توضیحات تکمیلی':'جزئیات هزینه'}</span><button class="x" id="dClose" aria-label="بستن">✕</button></div>`
+  +(k==='p'?dPri(r):dExp(r))
   +`<div class="d-nav"><button id="dPrev" ${i<=0?'disabled':''}>› قبلی</button><span class="pos">${fmt(i+1,0)} از ${fmt(arr.length,0)}</span><button id="dNext" ${i>=arr.length-1?'disabled':''}>بعدی ‹</button></div>`;
  $('dClose').onclick=()=>closeDetail();$('dPrev').onclick=()=>showDetail(curK,cur-1);$('dNext').onclick=()=>showDetail(curK,cur+1);$('sheetBox').scrollTop=0;}
 function openDetail(k,i){const was=$('sheet').classList.contains('open');showDetail(k,i);
@@ -188,7 +202,7 @@ window.addEventListener('popstate',()=>closeDetail(true));
 $('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))closeDetail()});
 document.addEventListener('keydown',e=>{if(!$('sheet').classList.contains('open'))return;
  if(e.key==='Escape')closeDetail();else if(e.key==='ArrowRight'&&cur>0)showDetail(curK,cur-1);else if(e.key==='ArrowLeft'&&cur<arrOf(curK).length-1)showDetail(curK,cur+1);});
-for(const id of ['tbody','mList']){const el=$(id);
+for(const id of ['tbody','mList','pBody']){const el=$(id);
  el.addEventListener('click',e=>{const t=e.target.closest('[data-i]');if(t)openDetail(t.dataset.k,Number(t.dataset.i))});
  el.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target.closest('[data-i]');if(t){e.preventDefault();openDetail(t.dataset.k,Number(t.dataset.i))}});}
 document.querySelectorAll('.mainTabs .tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mainTabs .tab').forEach(x=>x.classList.toggle('active',x===b));$('dash').classList.toggle('hidden',b.dataset.v!=='dash');$('price').classList.toggle('hidden',b.dataset.v!=='price');}));
