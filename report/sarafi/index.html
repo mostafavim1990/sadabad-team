@@ -204,7 +204,7 @@ function init(){const D=window.DATA;$("power").textContent=fmt(D.buyingPower||0)
  if(D.updatedAt){const d=new Date(D.updatedAt);if(!isNaN(d)){const j=toJ(d.getFullYear(),d.getMonth()+1,d.getDate());$("upd").textContent=PD(j[2])+" "+MN[j[1]-1]+" "+PD(j[0])}}
  render()}
 /* ===== گزارش هفتگی: فقط جمعه‌ها و فقط تا پایان ۳۱ فروردین ۱۴۰۶ ===== */
-const WR={target:2900000000,until:14060131,delay:2000}; // هدف شش‌ماهه (تومان) | آخرین تاریخ (شامل همان روز) | تاخیر نمایش (میلی‌ثانیه)
+const WR={target:2600000000,until:14060131,delay:2000}; // هدف شش‌ماهه (تومان) | آخرین تاریخ (شامل همان روز) | تاخیر نمایش (میلی‌ثانیه)
 function weekly(){
  const D=window.DATA;if(!D||!D.checks)return;
  const now=new Date(),j=toJ(now.getFullYear(),now.getMonth()+1,now.getDate()),tk=j[0]*10000+j[1]*100+j[2];
